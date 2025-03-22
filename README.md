@@ -1,4 +1,4 @@
-<p align="center"><img src= "resources/images/logo.png" alt="LiteSubtitler" width="150" /></p>
+<p align="center"><img src= "https://raw.githubusercontent.com/Tobin-wu/LiteSubtitler/refs/heads/main/resources/images/icons/logo-16.ico" alt="LiteSubtitler" width="150" /></p>
 <h2 align="center">千言字幕助手</h2>
 <h3 align="center">基于 LLM 大语言模型的字幕翻译和生成工具</h3>
 <p align="center">
@@ -28,8 +28,8 @@
 - ⬇️⬇️⬇️⬇️⬇️⬇️
 - **字幕助手使用群**
 
-<image height="200px" width="200px" src="https://raw.githubusercontent.com/Tobin-wu/LiteSubtitler/main/docs/使用群.png"/>
-
+<image height="200px" width="200px" src="https://raw.githubusercontent.com/Tobin-wu/LiteSubtitler/refs/heads/main/docs/使用群.png"/>
+                                         
 - **AI技术交流群**
 
 <image height="200px" width="200px" src="docs/技术群.png"/>
