@@ -28,11 +28,13 @@
 - ⬇️⬇️⬇️⬇️⬇️⬇️
 - **字幕助手使用群**
 
-<image height="200px" width="200px" src="https://raw.githubusercontent.com/Tobin-wu/LiteSubtitler/refs/heads/main/docs/使用群.png"/>
+<image height="200px" width="200px" src="https://raw.githubusercontent.com/Tobin-wu/LiteSubtitler/main/docs/使用群.png"/>
 
 - **AI技术交流群**
 
-<image height="200px" width="200px" src="https://github.com/Tobin-wu/LiteSubtitler/tree/main/docs/技术群.png"/>
+<image height="200px" width="200px" src="docs/技术群.png"/>
+
+![技术群](./docs/技术群.png ''技术群'')
 
 ## 📂2、安装后的目录结构
 
