@@ -1,0 +1,26 @@
+QComboBox {
+    background-color: #f0f0f0;
+    border: 1px solid #999;
+    border-radius: 1px;
+    #font-size: 16px;
+}
+QComboBox::view {
+    spacing: 5px; /* 设置项之间的间隔 */
+}
+#QComboBox::drop-down {
+#    subcontrol-origin: padding;
+#    subcontrol-position: top right;
+#    width: 15px;
+#    border-left-width: 1px;
+#    border-left-color: darkgray;
+#    border-left-style: solid;
+#}
+#QComboBox::down-arrow {
+#    image: url(:/path/to/image.png); /* 如果需要自定义箭头图标 */
+#}
+QComboBox QAbstractItemView::item {
+    height: 30px;
+    font-size: 16px;
+    padding: 5px; /* 设置内边距 */
+    spacing: 10px; /* 设置项之间的间隔 */
+}
