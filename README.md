@@ -32,7 +32,7 @@
                                          
 - **AI技术交流群**
 
-<image height="200px" width="200px" src="docs/技术群.png"/>
+<image height="200px" width="200px" src="https://github.com/Tobin-wu/LiteSubtitler/raw/refs/heads/main/docs/技术群.png"/>
 
 ![技术群](./docs/技术群.png ''技术群'')
 
