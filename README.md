@@ -1,4 +1,4 @@
-<p align="center"><img src= "https://raw.githubusercontent.com/Tobin-wu/LiteSubtitler/refs/heads/main/resources/images/icons/logo-16.ico" alt="LiteSubtitler" width="150" /></p>
+<p align="center"><img src= "resources/images/logo.png" alt="LiteSubtitler" width="150" /></p>
 <h2 align="center">千言字幕助手</h2>
 <h3 align="center">基于 LLM 大语言模型的字幕翻译和生成工具</h3>
 <p align="center">
@@ -28,13 +28,11 @@
 - ⬇️⬇️⬇️⬇️⬇️⬇️
 - **字幕助手使用群**
 
-<image height="200px" width="200px" src="https://raw.githubusercontent.com/Tobin-wu/LiteSubtitler/refs/heads/main/docs/使用群.png"/>
+<image height="200px" width="200px" src="docs/使用群.png"/>
                                          
 - **AI技术交流群**
 
-<image height="200px" width="200px" src="https://github.com/Tobin-wu/LiteSubtitler/raw/refs/heads/main/docs/技术群.png"/>
-
-![技术群](./docs/技术群.png ''技术群'')
+<image height="200px" width="200px" src="docs/技术群.png"/>
 
 ## 📂2、安装后的目录结构
 
@@ -65,7 +63,7 @@
 
 <table style="border-collapse: collapse; border: 1px solid black;">
   <tr>
-    <td style="padding: 5px;background-color:#fff;"><img src= "https://github.com/Tobin-wu/LiteSubtitler/tree/main/docs/screen.png" alt="ListSubtitler Demo"   /></td>
+    <td style="padding: 5px;background-color:#fff;"><img src= "docs/screen.png" alt="ListSubtitler Demo"   /></td>
   </tr>
 </table>
 
@@ -183,7 +181,7 @@ FasterWhisper用于做语音转文字处理。
    - **字幕合成**：硬合成到视频文件
 - **处理时长**：37:51（37分51秒）  
 - **LLM费用**：0.2571元（78459 tokens）
-- **具体测试数据**：请参考 [海洋奇缘(2016)](https://github.com/Tobin-wu/LiteSubtitler/tree/main/docs/demo/Moana.2016.md)
+- **具体测试数据**：请参考 [海洋奇缘(2016)](docs/demo/Moana.2016.md)
 
 ## 🐎6、高级功能
 
