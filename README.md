@@ -19,12 +19,14 @@
  
 ## 📖1、快速开始
 
-- **下载** [离线压缩包（LiteSubtitler-window-XXX.zip 或者 LiteSubtitler-window-XXX-full.7z）](https://github.com/Tobin-wu/LiteRecorder/releases) 解压后就可以使用；
-- **第一次使用**时建议下载 -full.7z 版本，-full.7z 文件中打包了 FasterWhisper工具 和 small 模型，而对应的zip文件则不包括FasterWhisper工具和模型；
-- **解压** -full.7z 文件后，运行其中的 LiteSubtitler.exe 就可以；
-- **升级**时只是要下载对应版本的 ZIP文件，解压后覆盖对应文件即可；
-- **编译运行**可以下载 [源代码（Source code）](https://github.com/Tobin-wu/LiteRecorder/releases) 然后自己编译运行；
-- **更多问题**可以加入字幕助手使用群与我们交流；如果对相关AI技术感兴趣，可以加入AI技术交流群。
+- **下载Window压缩包**: 解压后就可以使用；
+   - Gitee:  [Window缩包（LiteSubtitler-window-XXX.zip）](https://gitee.com/tobinwu/LiteSubtitler/releases)
+   - Github: [Window压缩包（LiteSubtitler-window-XXX.zip 或者 LiteSubtitler-window-XXX-full.7z）](https://github.com/Tobin-wu/LiteRecorder/releases)
+- **第一次使用**: 建议下载 -full.7z 版本，-full.7z 文件中打包了 FasterWhisper工具 和 small 模型，而对应的zip文件则不包括FasterWhisper工具和模型；
+- - **解压**: -full.7z 文件后，运行其中的 LiteSubtitler.exe 就可以；
+- **升级**: 只是要下载对应版本的 ZIP文件，解压后覆盖对应文件即可；
+- **编译运行**: 可以下载源代码然后自己编译运行；
+- **更多问题**: 可以加入字幕助手使用群与我们交流；如果对相关AI技术感兴趣，可以加入AI技术交流群。
 - ⬇️⬇️⬇️⬇️⬇️⬇️
 - **字幕助手使用群**
 
