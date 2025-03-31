@@ -26,8 +26,8 @@ class OpenAiChecker:
                 - str: 错误信息或 AI 助手的回复。
         """
         try:
-            # 创建 OpenAI 客户端并发送请求
-            client = openai.OpenAI(base_url=base_url, api_key=api_key, timeout=15)
+            # 创建 OpenAI 客户端并发送请求，timeout需要长一点，加载模型可能需要不少时间
+            client = openai.OpenAI(base_url=base_url, api_key=api_key, timeout=180)
             response = client.chat.completions.create(
                 model=model,
                 messages=[
@@ -35,7 +35,7 @@ class OpenAiChecker:
                     {"role": "user", "content": "Hello!"}
                 ],
                 max_tokens=100,
-                timeout=10
+                timeout=30
             )
             # 返回 AI 助手的回复
             return True, response.choices[0].message.content

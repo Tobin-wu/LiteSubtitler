@@ -5,14 +5,28 @@ import logging
 import json
 from typing import Dict, Any, List, Optional
 
-VERSION = "v1.0.0"
+VERSION = "v0.0.2"
+APP_TITLE = '千言字幕助手'
 APP_NAME = "LiteSubtitler"
-AUTHOR = "Tobin.wu"
+APP_LICENSE = "GNU General Public License version 3 (GPLv3)"
+APP_DESC = "基于大语言模型(LLM)的视频字幕生成和翻译处理助手"
+AUTHOR = "Tobin-wu"
+
 
 HELP_URL = "https://github.com/Tobin-wu/LiteSubtitler"
+
 GITHUB_REPO_URL = "https://github.com/Tobin-wu/LiteSubtitler"
+GITEE_REPO_URL = ("https://gitee.com/tobinwu/LiteSubtitler"
+                  "")
 RELEASE_URL = "https://github.com/Tobin-wu/LiteSubtitler/releases/latest"
 FEEDBACK_URL = "https://github.com/Tobin-wu/LiteSubtitler/issues"
+
+FASTER_WHISPER_URL = "https://github.com/Purfview/whisper-standalone-win/releases/tag/Faster-Whisper-XXL"
+LLM_ACCOUNT_URL = "https://cloud.siliconflow.cn/i/WtaGRkTP"
+
+SILICON_API_URL = 'https://api.siliconflow.cn/v1'
+SILICON_API_KEY = 'sk-wlyrgyaimjzndvavtogmqssbjdajdvdkzpqbeiyrqaoeivno'
+SILICON_MODELS = ['THUDM/glm-4-9b-chat', 'Qwen/Qwen2.5-7B-Instruct', 'THUDM/chatglm3-6b']
 
 ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # 确保当前工作目录为 exe 文件所在目录
@@ -30,6 +44,10 @@ SETTING_PATH = os.path.join(ROOT_PATH, "setting.json")
 PROMPT_PATH = os.path.join(RESOURCE_PATH, "prompts")
 
 ICON_REC = {
+    "logo": os.path.join(RESOURCE_PATH, "images", "logo.png"),
+    "author": os.path.join(RESOURCE_PATH, "images", "author.png"),
+    "customer_service": os.path.join(RESOURCE_PATH, "images", "使用群.png"),
+    "ai_tech": os.path.join(RESOURCE_PATH, "images", "技术群.png"),
     "add": os.path.join(RESOURCE_PATH, "images", "icons", "plus.png"),
     "run": os.path.join(RESOURCE_PATH, "images", "icons", "启动.png"),
     "stop": os.path.join(RESOURCE_PATH, "images", "icons", "暂停.png"),
@@ -45,6 +63,17 @@ ICON_REC = {
     "setting-show": os.path.join(RESOURCE_PATH, "images", "icons", "显示.png"),
     "setting-hide": os.path.join(RESOURCE_PATH, "images", "icons", "隐藏.png"),
     "refresh": os.path.join(RESOURCE_PATH, "images", "icons", "更新.png"),
+    "llm_check_tool": os.path.join(RESOURCE_PATH, "images", "icons", "ai工具.png"),
+    "gitee": os.path.join(RESOURCE_PATH, "images", "icons", "gitee.png"),
+    "github": os.path.join(RESOURCE_PATH, "images", "icons", "github.png"),
+    "about": os.path.join(RESOURCE_PATH, "images", "icons", "about.png"),
+    "exit": os.path.join(RESOURCE_PATH, "images", "icons", "exit.png"),
+    "save": os.path.join(RESOURCE_PATH, "images", "icons", "保存.png"),
+    "save-as": os.path.join(RESOURCE_PATH, "images", "icons", "另存为.png"),
+    "open": os.path.join(RESOURCE_PATH, "images", "icons", "打开.png"),
+    "chat": os.path.join(RESOURCE_PATH, "images", "icons", "chat.png"),
+    "subtitle": os.path.join(RESOURCE_PATH, "images", "icons", "字幕.png"),
+    "send": os.path.join(RESOURCE_PATH, "images", "icons", "发送.png"),
 }
 
 DEFAULT_ARGS = {
@@ -150,10 +179,19 @@ class ConfigTool:
         Returns:
             Dict[str, Any]: 配置文件的字典形式内容或默认配置。
         """
+        args = DEFAULT_ARGS.copy()
         if os.path.exists(SETTING_PATH):
             with open(SETTING_PATH, 'r', encoding='utf-8') as file:
-                return json.load(file)
-        return DEFAULT_ARGS.copy()
+                args = json.load(file)
+        if not ("PROMPT_FILES" in args):
+            args["PROMPT_FILES"] = {
+                "其他": os.path.join(PROMPT_PATH, "其他.txt"),
+                "摘要": os.path.join(PROMPT_PATH, "摘要.txt"),
+                "翻译-模型直译": os.path.join(PROMPT_PATH, "翻译-模型直译.txt"),
+                "翻译-精细意译": os.path.join(PROMPT_PATH, "翻译-精细意译.txt"),
+                "翻译-深思翻译": os.path.join(PROMPT_PATH, "翻译-深思翻译.txt")
+            }
+        return args
 
     @staticmethod
     def save_config_setting(config_args: Dict[str, Any]) -> None:

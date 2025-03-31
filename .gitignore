@@ -177,7 +177,6 @@ ui/package-lock.json
 ui/node_modules
 ui/dist
 apps/static
-data
 .dev
 poetry.lock
 /build

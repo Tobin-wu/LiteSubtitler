@@ -17,7 +17,7 @@ from service.video_service import VideoService
 from service.asr_service import AsrService
 from service.translate_service import TranslateService
 from task.task_obj import TaskObj
-from ui.array_table_model import ArrayTableModel
+from ui.data.array_table_model import ArrayTableModel
 from utils.file_utils import FileUtils
 
 

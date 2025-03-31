@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>frmMain</class>
- <widget class="QDialog" name="frmMain">
+ <widget class="QMainWindow" name="frmMain">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1307</width>
-    <height>967</height>
+    <width>1200</width>
+    <height>840</height>
    </rect>
   </property>
   <property name="font">
@@ -24,14 +24,6 @@
     <normaloff>../../resources/images/icons/logo-32.ico</normaloff>../../resources/images/icons/logo-32.ico</iconset>
   </property>
   <widget class="QWidget" name="verticalLayoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1307</width>
-     <height>971</height>
-    </rect>
-   </property>
    <layout class="QVBoxLayout" name="vlytMain" stretch="0,0,1,1">
     <property name="sizeConstraint">
      <enum>QLayout::SetDefaultConstraint</enum>
@@ -114,7 +106,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="chbVad">
+           <widget class="QCheckBox" name="ckbVad">
             <property name="text">
              <string>静音过滤</string>
             </property>
@@ -174,7 +166,7 @@
            <number>4</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="chbHumanVoice">
+           <widget class="QCheckBox" name="ckbHumanVoice">
             <property name="text">
              <string>消除背景音乐</string>
             </property>
@@ -273,7 +265,7 @@
            <number>4</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="chbTranslate">
+           <widget class="QCheckBox" name="ckbTranslate">
             <property name="text">
              <string>是否翻译</string>
             </property>
@@ -290,7 +282,7 @@
            <widget class="QComboBox" name="cbbTranslateMode"/>
           </item>
           <item>
-           <widget class="QCheckBox" name="chbClearPunctuation">
+           <widget class="QCheckBox" name="ckbClearPunctuation">
             <property name="text">
              <string>消除标点符号</string>
             </property>
@@ -441,21 +433,21 @@
            <number>4</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="chbEmbedSubtitle">
+           <widget class="QCheckBox" name="ckbEmbedSubtitle">
             <property name="text">
              <string>把字幕合成到视频中</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="chbSoftSubtitle">
+           <widget class="QCheckBox" name="ckbSoftSubtitle">
             <property name="text">
              <string>使用软字幕</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="chbRemoveTempFile">
+           <widget class="QCheckBox" name="ckbRemoveTempFile">
             <property name="text">
              <string>是否删除处理中产生的文件</string>
             </property>
@@ -827,7 +819,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QFrame" name="freTop">
+     <widget class="QFrame" name="freTools">
       <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
@@ -1198,6 +1190,90 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </item>
    </layout>
   </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1200</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="actAddFile"/>
+    <addaction name="actClearFile"/>
+    <addaction name="separator"/>
+    <addaction name="actExit"/>
+   </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>工具</string>
+    </property>
+    <addaction name="actLlmChecker"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="actGitee"/>
+    <addaction name="actGithub"/>
+    <addaction name="separator"/>
+    <addaction name="actAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuTool"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actGitee">
+   <property name="text">
+    <string>Gitee仓库</string>
+   </property>
+  </action>
+  <action name="actGithub">
+   <property name="text">
+    <string>Github仓库</string>
+   </property>
+  </action>
+  <action name="actAbout">
+   <property name="text">
+    <string>关于...</string>
+   </property>
+  </action>
+  <action name="actLlmChecker">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../resources/images/icons/link.png</normaloff>../../resources/images/icons/link.png</iconset>
+   </property>
+   <property name="text">
+    <string>AI聊天工具...</string>
+   </property>
+  </action>
+  <action name="actAddFile">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../resources/images/icons/plus.png</normaloff>../../resources/images/icons/plus.png</iconset>
+   </property>
+   <property name="text">
+    <string>添加文件...</string>
+   </property>
+  </action>
+  <action name="actClearFile">
+   <property name="icon">
+    <iconset>
+     <normaloff>../../resources/images/icons/清空.png</normaloff>../../resources/images/icons/清空.png</iconset>
+   </property>
+   <property name="text">
+    <string>清空文件</string>
+   </property>
+  </action>
+  <action name="actExit">
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

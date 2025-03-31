@@ -2,11 +2,14 @@
 import os
 from typing import Dict, Optional, Callable, Any
 
+from PyQt6.QtCore import pyqtSignal
+
 from config import PROMPT_PATH
 from core.base_object import BaseObject
 from core.llm.llm_translater import LlmTranslater
 from core.asr.asr_data import ASRData
 from core.srt.srt_tool import SrtTool
+from enums.translate_mode_enum import TranslateModeEnum
 from settings.prompt_setting import SUMMARIZER_PROMPT, TRANSLATE_PROMPT_FAST, TRANSLATE_PROMPT_PRECISE, \
     TRANSLATE_PROMPT_DEEP_THOUGHT
 from utils.dict_utils import DictUtils
@@ -21,7 +24,9 @@ class TranslateService(BaseObject):
         2. 支持批量翻译和摘要提取。
     """
 
-    def __init__(self, log_to_ui_func: Optional[Callable] = None):
+    callback_signal = pyqtSignal(TranslateModeEnum, str, str)  # 参数：翻译模式，字幕序号或者字幕rowid、翻译字幕
+
+    def __init__(self, log_to_ui_func: Optional[Callable] = None, callback: Optional[Callable] = None):
         """
         初始化翻译服务。
 
@@ -31,6 +36,7 @@ class TranslateService(BaseObject):
         super().__init__(log_to_ui_func=log_to_ui_func)
         self._args = {
             "need_translate": True,  # 是否翻译
+            "translate_mode": "",
             "source_language": "英文",  # 源语言
             "target_language": "中文",  # 目标语言
             "llm_api_url": "http://127.0.0.1:11434/v1",  # LLM API 地址
@@ -38,6 +44,10 @@ class TranslateService(BaseObject):
             "llm_model": "gemma2:latest",  # 使用的模型
             "need_remove_punctuation": True,  # 是否删除句子中的符号
         }
+
+        self.callback = callback
+        if callback:
+            self.callback_signal.connect(callback)
 
     def reset_args(self, the_args: Dict[str, Any]) -> None:
         """
@@ -48,7 +58,8 @@ class TranslateService(BaseObject):
         """
         DictUtils.update_by_key(self._args, the_args)
 
-    def translate_srt(self, out_file_path: str, asr_data: ASRData, batch_num: int = 10) -> ASRData:
+    def translate_srt(self, out_file_path: str | None, asr_data: ASRData,
+                      batch_num: int = 10) -> ASRData:
         """
         翻译字幕文件并保存结果。
 
@@ -64,12 +75,17 @@ class TranslateService(BaseObject):
             self.log_warning("无需翻译，系统配置为‘不需要翻译’")
             return asr_data
 
-        tr_asr_data = self._inner_translate(asr_data=asr_data, batch_num=batch_num)
+        mode = TranslateModeEnum.get_by_value(self._args["translate_mode"])
+        if not mode:
+            mode = TranslateModeEnum.PRECISE
+
+        tr_asr_data = self._inner_translate(asr_data=asr_data, mode=mode, batch_num=batch_num)
         if out_file_path:
             tr_asr_data.to_srt(layout='仅译文', save_path=out_file_path)
         return tr_asr_data
 
-    def _inner_translate(self, asr_data: ASRData, batch_num: int, prev_num: int = 2) -> ASRData:
+    def _inner_translate(self, asr_data: ASRData, batch_num: int, mode: TranslateModeEnum,
+                         prev_num: int = 2) -> ASRData:
         """
         内部方法，执行字幕翻译。
 
@@ -98,11 +114,14 @@ class TranslateService(BaseObject):
         # 读取提示语
         prompts = self._read_all_prompt_()
 
-        # 提取摘要信息
-        summarize_result = self._do_summarize(subtitle_content=asr_data.to_txt(),
-                                              worker=translater,
-                                              prompt=prompts['summarizer'])
-        self.log_info(f"摘要信息：\n{summarize_result}")
+        if mode == TranslateModeEnum.DEEP_THOUGHT:
+            # 提取摘要信息
+            summarize_result = self._do_summarize(subtitle_content=asr_data.to_txt(),
+                                                  worker=translater,
+                                                  prompt=prompts['summarizer'])
+            self.log_info(f"摘要信息：\n{summarize_result}")
+        else:
+            summarize_result = None
 
         # 执行翻译
         optimizer_result = self._do_translate(
@@ -111,13 +130,17 @@ class TranslateService(BaseObject):
             prev_num=prev_num,
             summarize_result=summarize_result,
             translater=translater,
+            mode=mode,
             prompts=prompts
         )
 
         # 更新翻译结果到 ASRData
         for i, subtitle_text in optimizer_result.items():
-            seg = asr_data.segments[int(i) - 1]
+            id1 = int(i) - 1
+            seg = asr_data.segments[id1]
             seg.text = subtitle_text
+            if self.callback:
+                self.callback_signal.emit(mode, str(id1), subtitle_text)
 
         return asr_data
 
@@ -163,7 +186,7 @@ class TranslateService(BaseObject):
         }
 
     def _do_translate(self, subtitle_json: Dict[int, str], batch_num: int, prev_num: int,
-                      summarize_result: str, translater: LlmTranslater,
+                      summarize_result: str, translater: LlmTranslater, mode: TranslateModeEnum,
                       prompts: Dict[str, str]) -> Dict[int, str]:
         """
         执行字幕翻译任务。
@@ -189,7 +212,8 @@ class TranslateService(BaseObject):
                 original_subtitles=chunks,
                 prev_num=prev_num,
                 summary_content=summarize_result,
-                prompts=prompts
+                prompts=prompts,
+                mode=mode
             )
         except Exception as e:
             self.log_exception(f"翻译字幕失败: {e}")

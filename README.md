@@ -29,11 +29,11 @@
 - ⬇️⬇️⬇️⬇️⬇️⬇️
 - **字幕助手使用群**
 
-<image height="200px" width="200px" src="docs/使用群.png"/>
+<image height="201px" width="201px" src="docs/使用群.png"/>
                                          
 - **AI技术交流群**
 
-<image height="200px" width="200px" src="docs/技术群.png"/>
+<image height="201px" width="201px" src="docs/技术群.png"/>
 
 ## 📂2、安装后的目录结构
 
@@ -61,10 +61,24 @@
 ```
 
 ## 📺3、UI 展示
-
+- 主界面
 <table style="border-collapse: collapse; border: 1px solid black;">
   <tr>
-    <td style="padding: 5px;background-color:#fff;"><img src= "docs/screen.png" alt="ListSubtitler Demo"   /></td>
+    <td style="padding: 5px;background-color:#fff;"><img src= "docs/screen.png" alt="ListSubtitler Main" width="1024" /></td>
+  </tr>
+</table>
+
+- AI聊天工具
+<table style="border-collapse: collapse; border: 1px solid black;">
+  <tr>
+    <td style="padding: 5px;background-color:#fff;"><img src= "docs/AI聊天.png" alt="ListSubtitler AI Chat" width="1024" /></td>
+  </tr>
+</table>
+
+- AI翻译工具
+<table style="border-collapse: collapse; border: 1px solid black;">
+  <tr>
+    <td style="padding: 5px;background-color:#fff;"><img src= "docs/AI翻译.png" alt="ListSubtitler AI Translate" width="1024" /></td>
   </tr>
 </table>
 
