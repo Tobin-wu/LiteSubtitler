@@ -43,8 +43,8 @@ class AIChatThread(QThread):
                         self.end_signal.emit(self.user_msg, ai_msg)
                         break
                     content = chunk.choices[0].delta.content
-                    self.message_signal.emit(f"AI: {content.lstrip()}")
-                    ai_msg = ai_msg + content.lstrip()
+                    self.message_signal.emit(f"AI: {content}")
+                    ai_msg = ai_msg + content
                     time.sleep(0.1)  # 控制响应速度
                 self.end_signal.emit(self.user_msg, ai_msg)
             else:

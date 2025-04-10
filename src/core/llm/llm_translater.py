@@ -1,4 +1,5 @@
 # coding: utf8
+import copy
 import difflib
 import re
 from typing import Dict, Callable, List
@@ -138,7 +139,7 @@ class LlmTranslater(BaseObject):
         Returns:
             Dict[int, str]: 翻译后的字幕。
         """
-        doing_subtitles = original_subtitles.copy()
+        doing_subtitles = copy.deepcopy(original_subtitles)
         ret = {}
         the_prompt = prompts[mode.name] if prompts[mode.name] else TRANSLATE_PROMPT
         for i in range(40):  # 最多进行40次重试

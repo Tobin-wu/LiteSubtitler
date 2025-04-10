@@ -13,6 +13,7 @@ class FasterWhisperModelEnum(Enum):
 
 
 class FasterWhisperDeviceEnum(Enum):
+    AUTO = "auto"
     CDUA = "cuda"
     CPU = "cpu"
 

@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'llm_checker_dlg.ui'
+# Form implementation generated from reading ui file 'llm_prompter_dlg.ui'
 #
 # Created by: PyQt6 UI code generator 6.4.2
 #
@@ -9,15 +9,15 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 
-class Ui_dlgLlmChecker(object):
-    def setupUi(self, dlgLlmChecker):
-        dlgLlmChecker.setObjectName("dlgLlmChecker")
-        dlgLlmChecker.resize(1017, 772)
-        dlgLlmChecker.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
-        self.verticalLayout_2 = QtWidgets.QVBoxLayout(dlgLlmChecker)
+class Ui_dlgLlmPrompter(object):
+    def setupUi(self, dlgLlmPrompter):
+        dlgLlmPrompter.setObjectName("dlgLlmPrompter")
+        dlgLlmPrompter.resize(1017, 772)
+        dlgLlmPrompter.setLayoutDirection(QtCore.Qt.LayoutDirection.LeftToRight)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout(dlgLlmPrompter)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.freSetting = QtWidgets.QFrame(parent=dlgLlmChecker)
-        self.freSetting.setFrameShape(QtWidgets.QFrame.Shape.Panel)
+        self.freSetting = QtWidgets.QFrame(parent=dlgLlmPrompter)
+        self.freSetting.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.freSetting.setObjectName("freSetting")
         self.vlytSetting = QtWidgets.QVBoxLayout(self.freSetting)
         self.vlytSetting.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetMinAndMaxSize)
@@ -25,7 +25,7 @@ class Ui_dlgLlmChecker(object):
         self.vlytSetting.setSpacing(2)
         self.vlytSetting.setObjectName("vlytSetting")
         self.freLLM = QtWidgets.QFrame(parent=self.freSetting)
-        self.freLLM.setFrameShape(QtWidgets.QFrame.Shape.Panel)
+        self.freLLM.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.freLLM.setObjectName("freLLM")
         self.hlytLLM = QtWidgets.QHBoxLayout(self.freLLM)
         self.hlytLLM.setContentsMargins(10, 4, 10, 4)
@@ -48,8 +48,13 @@ class Ui_dlgLlmChecker(object):
         self.hlytLLM.setStretch(2, 3)
         self.hlytLLM.setStretch(4, 2)
         self.vlytSetting.addWidget(self.freLLM)
+        self.line_2 = QtWidgets.QFrame(parent=self.freSetting)
+        self.line_2.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.line_2.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.line_2.setObjectName("line_2")
+        self.vlytSetting.addWidget(self.line_2)
         self.freTranslate = QtWidgets.QFrame(parent=self.freSetting)
-        self.freTranslate.setFrameShape(QtWidgets.QFrame.Shape.Panel)
+        self.freTranslate.setFrameShape(QtWidgets.QFrame.Shape.NoFrame)
         self.freTranslate.setObjectName("freTranslate")
         self.hlytTranslate = QtWidgets.QHBoxLayout(self.freTranslate)
         self.hlytTranslate.setContentsMargins(10, 4, 10, 4)
@@ -77,8 +82,18 @@ class Ui_dlgLlmChecker(object):
         self.hlytTranslate.setStretch(1, 1)
         self.hlytTranslate.setStretch(3, 2)
         self.vlytSetting.addWidget(self.freTranslate)
+        self.line_4 = QtWidgets.QFrame(parent=self.freSetting)
+        self.line_4.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.line_4.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.line_4.setObjectName("line_4")
+        self.vlytSetting.addWidget(self.line_4)
         spacerItem1 = QtWidgets.QSpacerItem(20, 10, QtWidgets.QSizePolicy.Policy.Minimum, QtWidgets.QSizePolicy.Policy.Expanding)
         self.vlytSetting.addItem(spacerItem1)
+        self.line_3 = QtWidgets.QFrame(parent=self.freSetting)
+        self.line_3.setFrameShape(QtWidgets.QFrame.Shape.HLine)
+        self.line_3.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
+        self.line_3.setObjectName("line_3")
+        self.vlytSetting.addWidget(self.line_3)
         self.line = QtWidgets.QFrame(parent=self.freSetting)
         self.line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Shadow.Sunken)
@@ -102,7 +117,7 @@ class Ui_dlgLlmChecker(object):
         self.verticalLayout.setSpacing(2)
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalFrame = QtWidgets.QFrame(parent=self.tabChat)
-        self.horizontalFrame.setFrameShape(QtWidgets.QFrame.Shape.Box)
+        self.horizontalFrame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.horizontalFrame.setObjectName("horizontalFrame")
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.horizontalFrame)
         self.horizontalLayout_4.setContentsMargins(10, 4, -1, 4)
@@ -295,26 +310,26 @@ class Ui_dlgLlmChecker(object):
         self.verticalLayout1.addWidget(self.tbvDemo)
         self.tabwtLLM.addTab(self.tabSubtitle, "")
         self.vlytSetting.addWidget(self.tabwtLLM)
-        self.vlytSetting.setStretch(4, 2)
+        self.vlytSetting.setStretch(7, 2)
         self.verticalLayout_2.addWidget(self.freSetting)
 
-        self.retranslateUi(dlgLlmChecker)
+        self.retranslateUi(dlgLlmPrompter)
         self.tabwtLLM.setCurrentIndex(0)
-        QtCore.QMetaObject.connectSlotsByName(dlgLlmChecker)
+        QtCore.QMetaObject.connectSlotsByName(dlgLlmPrompter)
 
-    def retranslateUi(self, dlgLlmChecker):
+    def retranslateUi(self, dlgLlmPrompter):
         _translate = QtCore.QCoreApplication.translate
-        dlgLlmChecker.setWindowTitle(_translate("dlgLlmChecker", "LLM 检测器"))
-        self.lblLLM.setText(_translate("dlgLlmChecker", "LLM 配置："))
-        self.lblApiKey.setText(_translate("dlgLlmChecker", "API Key"))
-        self.lblBaseUrl.setText(_translate("dlgLlmChecker", "Base URL"))
-        self.lblLlmModel.setText(_translate("dlgLlmChecker", "模型"))
-        self.cbbLlmModel.setItemText(0, _translate("dlgLlmChecker", "gemma2:latest"))
-        self.btnLlmRefresh.setText(_translate("dlgLlmChecker", "更新模型"))
-        self.btnSavePrompt.setText(_translate("dlgLlmChecker", "保存提示语"))
-        self.btnSaveAs.setText(_translate("dlgLlmChecker", "另存为..."))
-        self.lblPrompt.setText(_translate("dlgLlmChecker", "提示语"))
-        self.txtPrompt.setHtml(_translate("dlgLlmChecker", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        dlgLlmPrompter.setWindowTitle(_translate("dlgLlmPrompter", "提示语调整工具"))
+        self.lblLLM.setText(_translate("dlgLlmPrompter", "LLM 配置："))
+        self.lblApiKey.setText(_translate("dlgLlmPrompter", "API Key"))
+        self.lblBaseUrl.setText(_translate("dlgLlmPrompter", "Base URL"))
+        self.lblLlmModel.setText(_translate("dlgLlmPrompter", "模型"))
+        self.cbbLlmModel.setItemText(0, _translate("dlgLlmPrompter", "gemma2:latest"))
+        self.btnLlmRefresh.setText(_translate("dlgLlmPrompter", "更新模型"))
+        self.btnSavePrompt.setText(_translate("dlgLlmPrompter", "保存提示语"))
+        self.btnSaveAs.setText(_translate("dlgLlmPrompter", "另存为..."))
+        self.lblPrompt.setText(_translate("dlgLlmPrompter", "提示语"))
+        self.txtPrompt.setHtml(_translate("dlgLlmPrompter", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "hr { height: 1px; border-width: 0; }\n"
@@ -322,11 +337,11 @@ class Ui_dlgLlmChecker(object):
 "li.checked::marker { content: \"\\2612\"; }\n"
 "</style></head><body style=\" font-family:\'Microsoft YaHei UI\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'SimSun\'; font-size:9pt;\"><br /></p></body></html>"))
-        self.ckbHistory.setText(_translate("dlgLlmChecker", "支持上下文"))
-        self.ckbUsePrompt.setText(_translate("dlgLlmChecker", "使用提示语"))
-        self.btnSendMsg.setText(_translate("dlgLlmChecker", "发送"))
-        self.tabwtLLM.setTabText(self.tabwtLLM.indexOf(self.tabChat), _translate("dlgLlmChecker", "聊天模式"))
-        self.btnOpenDemo.setText(_translate("dlgLlmChecker", "打开字幕样本"))
-        self.btnRun.setText(_translate("dlgLlmChecker", " 执行"))
-        self.lblLanguage.setText(_translate("dlgLlmChecker", "目标语言"))
-        self.tabwtLLM.setTabText(self.tabwtLLM.indexOf(self.tabSubtitle), _translate("dlgLlmChecker", "字幕模式"))
+        self.ckbHistory.setText(_translate("dlgLlmPrompter", "支持上下文"))
+        self.ckbUsePrompt.setText(_translate("dlgLlmPrompter", "使用提示语"))
+        self.btnSendMsg.setText(_translate("dlgLlmPrompter", "发送"))
+        self.tabwtLLM.setTabText(self.tabwtLLM.indexOf(self.tabChat), _translate("dlgLlmPrompter", "聊天模式"))
+        self.btnOpenDemo.setText(_translate("dlgLlmPrompter", "打开字幕样本"))
+        self.btnRun.setText(_translate("dlgLlmPrompter", " 执行"))
+        self.lblLanguage.setText(_translate("dlgLlmPrompter", "目标语言"))
+        self.tabwtLLM.setTabText(self.tabwtLLM.indexOf(self.tabSubtitle), _translate("dlgLlmPrompter", "字幕模式"))

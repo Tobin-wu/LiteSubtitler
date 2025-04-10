@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>dlgLlmChecker</class>
- <widget class="QDialog" name="dlgLlmChecker">
+ <class>dlgLlmPrompter</class>
+ <widget class="QDialog" name="dlgLlmPrompter">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>LLM 检测器</string>
+   <string>提示语调整工具</string>
   </property>
   <property name="layoutDirection">
    <enum>Qt::LeftToRight</enum>
@@ -20,9 +20,9 @@
    <item>
     <widget class="QFrame" name="freSetting">
      <property name="frameShape">
-      <enum>QFrame::Panel</enum>
+      <enum>QFrame::StyledPanel</enum>
      </property>
-     <layout class="QVBoxLayout" name="vlytSetting" stretch="0,0,0,0,2">
+     <layout class="QVBoxLayout" name="vlytSetting" stretch="0,0,0,0,0,0,0,2">
       <property name="spacing">
        <number>2</number>
       </property>
@@ -44,7 +44,7 @@
       <item>
        <widget class="QFrame" name="freLLM">
         <property name="frameShape">
-         <enum>QFrame::Panel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <layout class="QHBoxLayout" name="hlytLLM" stretch="0,0,3,0,2">
          <property name="leftMargin">
@@ -90,9 +90,16 @@
        </widget>
       </item>
       <item>
+       <widget class="Line" name="line_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QFrame" name="freTranslate">
         <property name="frameShape">
-         <enum>QFrame::Panel</enum>
+         <enum>QFrame::NoFrame</enum>
         </property>
         <layout class="QHBoxLayout" name="hlytTranslate" stretch="0,1,0,2">
          <property name="leftMargin">
@@ -157,6 +164,13 @@
        </widget>
       </item>
       <item>
+       <widget class="Line" name="line_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -168,6 +182,13 @@
          </size>
         </property>
        </spacer>
+      </item>
+      <item>
+       <widget class="Line" name="line_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="Line" name="line">
@@ -216,7 +237,7 @@
           <item>
            <widget class="QFrame" name="horizontalFrame">
             <property name="frameShape">
-             <enum>QFrame::Box</enum>
+             <enum>QFrame::StyledPanel</enum>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0,0,1,2">
              <property name="leftMargin">

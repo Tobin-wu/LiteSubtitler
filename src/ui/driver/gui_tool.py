@@ -25,6 +25,17 @@ class GuiTool:
     """界面处理工具，用于生成各种通用对话框，通用操作等。"""
 
     @staticmethod
+    def open_and_select_file(parent: QWidget, caption: str, filter_str: str, file_edit: QLineEdit) -> str:
+        file, _ = QFileDialog.getOpenFileName(
+            parent=parent,
+            caption=caption,
+            filter=filter_str
+        )
+        if file and file_edit:
+            file_edit.setText(file)
+        return file
+
+    @staticmethod
     def load_llm_models(cbb_llm_model: QComboBox, base_url: str, api_key: str,
                         current_model: str, config_args=None) -> int:
         """加载LLM模型列表到QComboBox中。
@@ -350,11 +361,12 @@ class GuiTool:
         return file_name
 
     @staticmethod
-    def save_dialog(parent: QWidget, filter_str: str) -> str:
+    def save_dialog(parent: QWidget, default_path: str, filter_str: str) -> str:
         """保存文件对话框。
 
         Args:
             parent (QWidget): 父窗口，用于显示文件选择对话框。
+            default_path (str): 默认路径.
             filter_str (str): 文件过滤器字符串.
 
         Returns:
@@ -364,8 +376,6 @@ class GuiTool:
             filter_str = "Text Files (*.txt);;All Files (*)"
 
         # 设置默认保存路径和文件名
-        default_path = "./untitled.txt"  # 默认路径和文件名
-
         dialog = QFileDialog()
         dialog.setWindowTitle("另存为")
         dialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)  # 设置为保存模式

@@ -19,31 +19,31 @@ class AboutFacade(BaseObject):
         super().__init__(log_to_ui_func=func_write_log)
 
         self.dialog = QDialog()
-        self.ui_dialog = Ui_dlgAbout()
-        self.ui_dialog.setupUi(self.dialog)
+        self.ui = Ui_dlgAbout()
+        self.ui.setupUi(self.dialog)
 
-        self.ui_dialog.edtAppName.setText(f"{APP_TITLE}，{APP_NAME}")
-        self.ui_dialog.edtVersion.setText(f"Version：{VERSION}")
-        self.ui_dialog.edtAppDesc.setText(f"{APP_DESC}")
-        self.ui_dialog.edtLicense.setText(f"开源协议：{APP_LICENSE}")
+        self.ui.edtAppName.setText(f"{APP_TITLE}，{APP_NAME}")
+        self.ui.edtVersion.setText(f"Version：{VERSION}")
+        self.ui.edtAppDesc.setText(f"{APP_DESC}")
+        self.ui.edtLicense.setText(f"开源协议：{APP_LICENSE}")
 
-        self.ui_dialog.lblAuthorName.setText(f"联系作者：{AUTHOR}")
+        self.ui.lblAuthorName.setText(f"联系作者：{AUTHOR}")
 
         target_size = QSize(201, 201)
 
-        self.ui_dialog.lblLogo.setPixmap(QtGui.QPixmap(ICON_REC.get('logo')))
-        self.ui_dialog.lblAuthor.setPixmap(QtGui.QPixmap(ICON_REC.get('author')))
+        self.ui.lblLogo.setPixmap(QtGui.QPixmap(ICON_REC.get('logo')))
+        self.ui.lblAuthor.setPixmap(QtGui.QPixmap(ICON_REC.get('author')))
 
-        self._load_qrcode_(label=self.ui_dialog.lblService,
+        self._load_qrcode_(label=self.ui.lblService,
                            png_url=self._IMAGE_BASE_URL_ + '/使用群.png',
                            default_rec='customer_service',
                            target_size=target_size)
-        self._load_qrcode_(label=self.ui_dialog.lblAiTech,
+        self._load_qrcode_(label=self.ui.lblAiTech,
                            png_url=self._IMAGE_BASE_URL_ + '/技术群.png',
                            default_rec='ai_tech',
                            target_size=target_size)
 
-        self.ui_dialog.btnClose.clicked.connect(lambda: self.dialog.close())
+        self.ui.btnClose.clicked.connect(lambda: self.dialog.close())
 
     def show(self) -> None:
         """显示。"""

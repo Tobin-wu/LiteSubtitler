@@ -7,6 +7,7 @@ from pathlib import Path
 import tempfile
 from typing import List
 
+from enums.faster_whisper_enums import FasterWhisperDeviceEnum
 from .asr_data_seg import ASRDataSeg
 from .asr_data_builder import AsrDataBuilder
 from .base_asr import BaseASR
@@ -43,7 +44,7 @@ class FasterWhisper(BaseASR):
                  whisper_model: str,
                  model_dir: str,
                  language: str = "zh",
-                 device: str = "cpu",
+                 device: str = "auto",
                  use_cache: bool = False,
                  output_dir: str = None,
                  output_format: str = "srt",
@@ -68,7 +69,7 @@ class FasterWhisper(BaseASR):
             whisper_model (str): Whisper 模型路径。
             model_dir (str): 模型目录。
             language (str, optional): 识别语言，默认为中文。
-            device (str, optional): 使用的设备，默认为 CPU。
+            device (str, optional): 使用的设备，默认为 auto, 自动检测。
             use_cache (bool, optional): 是否使用缓存。
             output_dir (str, optional): 输出目录。
             output_format (str, optional): 输出格式，默认为 SRT。
@@ -143,9 +144,11 @@ class FasterWhisper(BaseASR):
         # 基本参数
         cmd.extend([
             str(audio_path),
-            "-d", self.device,
             "--output_format", self.output_format,
         ])
+
+        if self.device != FasterWhisperDeviceEnum.AUTO.value:
+            cmd.extend(["-d", self.device])
 
         if self.language:
             cmd.extend(["-l", self.language])

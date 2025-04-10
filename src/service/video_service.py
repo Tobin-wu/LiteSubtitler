@@ -6,7 +6,9 @@ import time
 from pathlib import Path
 from typing import Literal, Optional, Dict, Callable, Any
 
+from config import ConfigTool
 from core.asr.asr_data import ASRData
+from core.asr.asr_data_builder import AsrDataBuilder
 from core.base_object import BaseObject
 from model.file_vo import FileVO
 from utils.dict_utils import DictUtils
@@ -454,3 +456,24 @@ class VideoService(BaseObject):
             # 记录异常信息并返回初始化的视频信息
             self.log_exception(f"获取视频信息时出错: {str(e)}")
             return {k: '' if isinstance(v, str) else 0 for k, v in video_info.items()}
+
+
+if __name__ == '__main__':
+    # 读取配置信息
+    config_args = ConfigTool.read_config_setting()
+
+    # 修改字幕布局为：仅原文
+    config_args['subtitle_args']['subtitle_layout'] = '仅原文'
+
+    # 加载字幕文件
+    asr_data1 = AsrDataBuilder.from_subtitle_file("D:\\tools\\ai\\AppData\\DeepSeek做字幕.srt")
+
+    # 创建视频服务对象
+    video_service = VideoService()
+
+    # 设置视频服务对象的字幕参数
+    video_service.reset_args(config_args['subtitle_args'])
+
+    # 进行合成处理
+    video_file = "D:\\tools\\ai\\AppData\\DeepSeek做字幕.mp4"
+    video_service.embed_subtitles(video_file, asr_data1)

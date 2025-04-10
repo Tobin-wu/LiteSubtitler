@@ -1,4 +1,5 @@
 # coding: utf8
+import copy
 import os
 from typing import LiteralString
 
@@ -42,7 +43,7 @@ class MainController(BaseObject):
         """
         super().__init__(log_to_ui_func=log_to_ui_func)
 
-        self.config_args = config_args.copy()
+        self.config_args = copy.deepcopy(config_args)
         self.model = model
 
         self.video_service = VideoService(log_to_ui_func=log_to_ui_func)  # 视频处理服务
@@ -75,7 +76,7 @@ class MainController(BaseObject):
         """
         if args:
             # 用新参数覆盖config_args
-            self.config_args = args.copy()
+            self.config_args = copy.deepcopy(args)
 
         self.stopped = False
         self.scheduler.stopped = False

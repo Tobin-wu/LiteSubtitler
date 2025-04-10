@@ -58,7 +58,7 @@
         <property name="frameShape">
          <enum>QFrame::StyledPanel</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,1">
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
          <item>
           <widget class="QLabel" name="lblLogo">
            <property name="frameShape">
@@ -114,6 +114,13 @@
              </widget>
             </item>
             <item>
+             <widget class="Line" name="line_4">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QLineEdit" name="edtVersion">
               <property name="text">
                <string>Version：v0.0.2</string>
@@ -143,6 +150,13 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="Line" name="line_5">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -155,7 +169,7 @@
          <item>
           <widget class="QFrame" name="freQrcode">
            <property name="frameShape">
-            <enum>QFrame::Box</enum>
+            <enum>QFrame::StyledPanel</enum>
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <property name="spacing">

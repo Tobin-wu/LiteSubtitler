@@ -1,25 +1,26 @@
 # coding: utf8
+import copy
 import os
 import sys
 import logging
 import json
 from typing import Dict, Any, List, Optional
 
-VERSION = "v0.0.2"
+VERSION = "v0.0.3"
 APP_TITLE = '千言字幕助手'
 APP_NAME = "LiteSubtitler"
 APP_LICENSE = "GNU General Public License version 3 (GPLv3)"
 APP_DESC = "基于大语言模型(LLM)的视频字幕生成和翻译处理助手"
 AUTHOR = "Tobin-wu"
 
+GITEE_REPO_URL = "https://gitee.com/tobinwu/LiteSubtitler"
 
 HELP_URL = "https://github.com/Tobin-wu/LiteSubtitler"
-
 GITHUB_REPO_URL = "https://github.com/Tobin-wu/LiteSubtitler"
-GITEE_REPO_URL = ("https://gitee.com/tobinwu/LiteSubtitler"
-                  "")
 RELEASE_URL = "https://github.com/Tobin-wu/LiteSubtitler/releases/latest"
 FEEDBACK_URL = "https://github.com/Tobin-wu/LiteSubtitler/issues"
+
+FEISHU_DOWNLOAD_URL = "https://tcnch14ftecp.feishu.cn/drive/folder/KUwXfwXyZlQEJ1dKXxMcjtvRnvb"
 
 FASTER_WHISPER_URL = "https://github.com/Purfview/whisper-standalone-win/releases/tag/Faster-Whisper-XXL"
 LLM_ACCOUNT_URL = "https://cloud.siliconflow.cn/i/WtaGRkTP"
@@ -74,6 +75,10 @@ ICON_REC = {
     "chat": os.path.join(RESOURCE_PATH, "images", "icons", "chat.png"),
     "subtitle": os.path.join(RESOURCE_PATH, "images", "icons", "字幕.png"),
     "send": os.path.join(RESOURCE_PATH, "images", "icons", "发送.png"),
+    "cancel": os.path.join(RESOURCE_PATH, "images", "icons", "取消.png"),
+    "ok": os.path.join(RESOURCE_PATH, "images", "icons", "确定.png"),
+    "export": os.path.join(RESOURCE_PATH, "images", "icons", "导出.png"),
+    "feishu": os.path.join(RESOURCE_PATH, "images", "icons", "飞书.png"),
 }
 
 DEFAULT_ARGS = {
@@ -87,7 +92,7 @@ DEFAULT_ARGS = {
         "faster_whisper_path": os.path.join(ROOT_PATH, "Faster-Whisper-XXL", "faster-whisper-xxl.exe"),
         "whisper_model": "small",  # "large-v2",
         "model_dir": os.path.join(ROOT_PATH, "models"),
-        "device": "cpu",  # cuda or cpu
+        "device": "auto",  # cuda or cpu or auto
         "vad_filter": False,
         "vad_threshold": 0.2,
         "vad_method": "silero_v3",
@@ -96,9 +101,9 @@ DEFAULT_ARGS = {
     },
     "translate_args": {
         "need_translate": True,  # 是否翻译
-        "translate_mode": "精细翻译",
+        "translate_mode": "精细意译",
         "source_language": "",  # 源语言
-        "target_language": "简体中文",  # 目标语言
+        "target_language": "简体中文(Chinese, Simplified)",  # 目标语言
         # "llm_api_url": "http://127.0.0.1:11434/v1",
         # "llm_api_key": "api.key",
         # "llm_model": "gemma2:latest",  # 模型
@@ -179,7 +184,7 @@ class ConfigTool:
         Returns:
             Dict[str, Any]: 配置文件的字典形式内容或默认配置。
         """
-        args = DEFAULT_ARGS.copy()
+        args = copy.deepcopy(DEFAULT_ARGS)
         if os.path.exists(SETTING_PATH):
             with open(SETTING_PATH, 'r', encoding='utf-8') as file:
                 args = json.load(file)

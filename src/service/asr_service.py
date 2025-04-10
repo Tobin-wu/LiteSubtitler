@@ -43,7 +43,7 @@ class AsrService(BaseObject):
             "faster_whisper_path": "D:/tools/ai/Faster-Whisper-XXL/faster-whisper-xxl.exe",
             "whisper_model": "large-v2",
             "model_dir": "D:/tools/ai/models",
-            "device": "cuda",  # cuda or cpu
+            "device": "auto",  # cuda or cpu or auto
             "vad_filter": False,
             "vad_threshold": 0.2,
             "vad_method": "silero_v3",

@@ -1,6 +1,4 @@
 # coding: utf8
-import threading
-
 import openai
 from PyQt6.QtCore import pyqtSlot, QTime, QEventLoop
 from PyQt6.QtGui import QColor, QTextCharFormat, QTextCursor, QFont
@@ -17,69 +15,71 @@ from enums.translate_mode_enum import TranslateModeEnum
 from service.translate_service import TranslateService
 from ui.driver.ai_translate_thread import AiTranslateThread
 from ui.driver.gui_tool import GuiTool
-from ui.gui.llm_checker_dlg import Ui_dlgLlmChecker
+from ui.gui.llm_prompter_dlg import Ui_dlgLlmPrompter
 from utils.file_utils import FileUtils
 
 
-class LlmCheckerFacade(BaseObject):
-    """LLM工具的外观类。"""
+class LlmPrompterFacade(BaseObject):
+    """LLM提示语工具的外观类。"""
 
     def __init__(self, func_write_log, config):
-        """初始化LLM检测工具实例。"""
+        """初始化LLM提示语工具实例。"""
         super().__init__(log_to_ui_func=func_write_log)
 
         self.translate_service = TranslateService(log_to_ui_func=func_write_log,
                                                   callback=self.update_to_cell)  # 翻译服务
 
         self.dialog = QDialog()
-        self.ui_dialog = Ui_dlgLlmChecker()
-        self.ui_dialog.setupUi(self.dialog)
+        self.ui = Ui_dlgLlmPrompter()
+        self.ui.setupUi(self.dialog)
 
-        self.ui_dialog.btnRun.setIcon(GuiTool.build_icon(ICON_REC.get('run')))
-        self.ui_dialog.btnSavePrompt.setIcon(GuiTool.build_icon(ICON_REC.get('save')))
-        self.ui_dialog.btnSaveAs.setIcon(GuiTool.build_icon(ICON_REC.get('save-as')))
-        self.ui_dialog.btnOpenDemo.setIcon(GuiTool.build_icon(ICON_REC.get('open')))
-        self.ui_dialog.btnLlmRefresh.setIcon(GuiTool.build_icon(ICON_REC.get('refresh')))
-        self.ui_dialog.btnSendMsg.setIcon(GuiTool.build_icon(ICON_REC.get('send')))
+        self.ui.btnRun.setIcon(GuiTool.build_icon(ICON_REC.get('run')))
+        self.ui.btnSavePrompt.setIcon(GuiTool.build_icon(ICON_REC.get('save')))
+        self.ui.btnSaveAs.setIcon(GuiTool.build_icon(ICON_REC.get('save-as')))
+        self.ui.btnOpenDemo.setIcon(GuiTool.build_icon(ICON_REC.get('open')))
+        self.ui.btnLlmRefresh.setIcon(GuiTool.build_icon(ICON_REC.get('refresh')))
+        self.ui.btnSendMsg.setIcon(GuiTool.build_icon(ICON_REC.get('send')))
 
-        self.ui_dialog.btnRun.clicked.connect(self._on_run_translate_)
-        self.ui_dialog.btnSavePrompt.clicked.connect(self._on_save_prompt_)
-        self.ui_dialog.btnSaveAs.clicked.connect(self._on_save_as_prompt_)
-        self.ui_dialog.btnOpenDemo.clicked.connect(self._on_open_subtitle_)
-        self.ui_dialog.btnLlmRefresh.clicked.connect(self._on_refresh_llm_models_)
-        self.ui_dialog.btnSendMsg.clicked.connect(self._on_send_chat_msg_)
+        self.ui.btnRun.clicked.connect(self._on_run_translate_)
+        self.ui.btnSavePrompt.clicked.connect(self._on_save_prompt_)
+        self.ui.btnSaveAs.clicked.connect(self._on_save_as_prompt_)
+        self.ui.btnOpenDemo.clicked.connect(self._on_open_subtitle_)
+        self.ui.btnLlmRefresh.clicked.connect(self._on_refresh_llm_models_)
+        self.ui.btnSendMsg.clicked.connect(self._on_send_chat_msg_)
 
         self.config_args = config
-        self.asr_data: ASRData = None
+        self.asr_data = None
 
         self.chat_thread = None  # 聊天线程
         self.current_chat_msgs = []  # 当前聊天记录
         self.history_chat_msgs = []  # 历史聊天记录
 
         # 输入提示
-        self.ui_dialog.edtChatMsg.setPlaceholderText("输入您的问题...")
-        self.ui_dialog.edtChatMsg.setFocus()
+        self.ui.edtChatMsg.setPlaceholderText("输入您的问题...")
+        self.ui.edtChatMsg.setFocus()
 
-        self.ui_dialog.edtBaseUrl.setText(self.config_args["base_url"])
-        self.ui_dialog.edtAPiKey.setText(self.config_args["api_key"])
-        self.ui_dialog.edtBaseUrl.textChanged.connect(self._on_llm_changed_)
-        self.ui_dialog.edtAPiKey.textChanged.connect(self._on_llm_changed_)
+        self.ui.edtBaseUrl.setText(self.config_args["base_url"])
+        self.ui.edtAPiKey.setText(self.config_args["api_key"])
+        self.ui.edtBaseUrl.textChanged.connect(self._on_llm_changed_)
+        self.ui.edtAPiKey.textChanged.connect(self._on_llm_changed_)
 
         self.client = self._build_new_client_()
 
         if "models" in self.config_args:
-            GuiTool.init_combobox(combobox=self.ui_dialog.cbbLlmModel,
+            GuiTool.init_combobox(combobox=self.ui.cbbLlmModel,
                                   values={item: item for item in self.config_args["models"]})
 
-        GuiTool.init_combobox(combobox=self.ui_dialog.cbbPrompt,
+        GuiTool.init_combobox(combobox=self.ui.cbbPrompt,
                               values=self.config_args["PROMPT_FILES"],
                               on_combobox_changed=self._load_prompt_)
         self._load_prompt_()
 
-        GuiTool.init_combobox(combobox=self.ui_dialog.cbbTargetLanguage,
+        GuiTool.init_combobox(combobox=self.ui.cbbTargetLanguage,
                               values={val.value: val.name for val in SubtitleLanguageEnum})
 
         self.model = self._build_tableview_model_()
+
+        self._on_refresh_llm_models_()  # 刷新模型
 
     def show(self) -> None:
         """显示。"""
@@ -91,21 +91,21 @@ class LlmCheckerFacade(BaseObject):
     def _build_new_client_(self):
         self.llm_changed = False
         return openai.OpenAI(
-            base_url=self.ui_dialog.edtBaseUrl.text(),
-            api_key=self.ui_dialog.edtAPiKey.text(),
+            base_url=self.ui.edtBaseUrl.text(),
+            api_key=self.ui.edtAPiKey.text(),
             timeout=180
         )
 
     @pyqtSlot()
     def _on_send_chat_msg_(self):
         """发送消息并启动聊天线程"""
-        user_input = self.ui_dialog.edtChatMsg.toPlainText().strip()
+        user_input = self.ui.edtChatMsg.toPlainText().strip()
         if not user_input:
             return
 
         # 显示用户消息
         self._add_chat_message_(user_input, is_user=True)
-        self.ui_dialog.edtChatMsg.clear()
+        self.ui.edtChatMsg.clear()
 
         # 准备API请求
         user_message = {"role": "user", "content": user_input}
@@ -115,17 +115,17 @@ class LlmCheckerFacade(BaseObject):
         if self.chat_thread and self.chat_thread.is_running:
             self.chat_thread.stop()
 
-        if self.ui_dialog.ckbHistory.isChecked():
-            chat_msgs = self.current_chat_msgs[-(self.ui_dialog.spbHistoryNum.value() + 1):]
+        if self.ui.ckbHistory.isChecked():
+            chat_msgs = self.current_chat_msgs[-(self.ui.spbHistoryNum.value() + 1):]
         else:
             chat_msgs = [user_message]
-        prompt = self.ui_dialog.txtPrompt.toPlainText()
-        if self.ui_dialog.ckbUsePrompt.isChecked() and prompt:
+        prompt = self.ui.txtPrompt.toPlainText()
+        if self.ui.ckbUsePrompt.isChecked() and prompt:
             chat_msgs.insert(
                 0,
                 {
                     "role": "system",
-                    "content": prompt.replace("TargetLanguage", self.ui_dialog.cbbTargetLanguage.currentText())
+                    "content": prompt.replace("TargetLanguage", self.ui.cbbTargetLanguage.currentText())
                 }
             )
         if self.llm_changed:
@@ -134,7 +134,7 @@ class LlmCheckerFacade(BaseObject):
             # 启动新线程
             self.chat_thread = AIChatThread(ai_client=self.client,
                                             chat_msg=chat_msgs,
-                                            model=self.ui_dialog.cbbLlmModel.currentText(),
+                                            model=self.ui.cbbLlmModel.currentText(),
                                             user_msg=user_input)
             self.chat_thread.message_signal.connect(self.update_chat_display)
             self.chat_thread.end_signal.connect(self.when_chat_msg_end)
@@ -142,7 +142,7 @@ class LlmCheckerFacade(BaseObject):
             self.chat_thread.init_client_msg(
                 ai_client=self.client,
                 chat_msg=chat_msgs,
-                model=self.ui_dialog.cbbLlmModel.currentText(),
+                model=self.ui.cbbLlmModel.currentText(),
                 user_msg=user_input)
 
         self._add_chat_message_(None, is_user=False)
@@ -165,7 +165,7 @@ class LlmCheckerFacade(BaseObject):
 
     def _append_text_(self, text, color=QColor(0, 0, 0), bold=False):
         """辅助方法：追加带格式的文本"""
-        cursor = self.ui_dialog.txtShowMsg.textCursor()
+        cursor = self.ui.txtShowMsg.textCursor()
         txt_format = QTextCharFormat()
         txt_format.setForeground(color)
         if bold:
@@ -173,8 +173,8 @@ class LlmCheckerFacade(BaseObject):
         cursor.mergeCharFormat(txt_format)
         cursor.movePosition(QTextCursor.MoveOperation.End)
         cursor.insertText(text, txt_format)
-        self.ui_dialog.txtShowMsg.setTextCursor(cursor)
-        self.ui_dialog.txtShowMsg.ensureCursorVisible()
+        self.ui.txtShowMsg.setTextCursor(cursor)
+        self.ui.txtShowMsg.ensureCursorVisible()
 
     @pyqtSlot(str, str)
     def when_chat_msg_end(self, user_msg: str, ai_msg: str):
@@ -199,7 +199,7 @@ class LlmCheckerFacade(BaseObject):
     def _on_save_prompt_(self):
         FileUtils.write_text(
             file_path=self._read_prompt_file_path_(),
-            text=self.ui_dialog.txtPrompt.toPlainText()
+            text=self.ui.txtPrompt.toPlainText()
         )
 
     def _on_save_as_prompt_(self):
@@ -208,15 +208,15 @@ class LlmCheckerFacade(BaseObject):
         if file_path:
             FileUtils.write_text(
                 file_path=file_path,
-                text=self.ui_dialog.txtPrompt.toPlainText()
+                text=self.ui.txtPrompt.toPlainText()
             )
             self.log_info(f"另存到：{file_path}")
 
     def _on_refresh_llm_models_(self) -> None:
         self._load_llm_models(
-            base_url=self.ui_dialog.edtBaseUrl.text(),
-            api_key=self.ui_dialog.edtAPiKey.text(),
-            current_model=self.ui_dialog.cbbLlmModel.currentText()
+            base_url=self.ui.edtBaseUrl.text(),
+            api_key=self.ui.edtAPiKey.text(),
+            current_model=self.ui.cbbLlmModel.currentText()
         )
 
     def _load_llm_models(self, base_url: str, api_key: str, current_model: str) -> None:
@@ -229,7 +229,7 @@ class LlmCheckerFacade(BaseObject):
         """
         try:
             cnt = GuiTool.load_llm_models(
-                cbb_llm_model=self.ui_dialog.cbbLlmModel,
+                cbb_llm_model=self.ui.cbbLlmModel,
                 base_url=base_url,
                 api_key=api_key,
                 current_model=current_model
@@ -240,10 +240,10 @@ class LlmCheckerFacade(BaseObject):
             self.log_error(f"读取LLM模型列表发生异常", e)
 
     def _load_prompt_(self):
-        self.ui_dialog.txtPrompt.setText(FileUtils.read_text(input_file_path=self._read_prompt_file_path_()))
+        self.ui.txtPrompt.setText(FileUtils.read_text(input_file_path=self._read_prompt_file_path_()))
 
     def _read_prompt_file_path_(self) -> str:
-        return str(self.ui_dialog.cbbPrompt.currentData())
+        return str(self.ui.cbbPrompt.currentData())
 
     def _on_open_subtitle_(self):
         subtitle_formats = SupportedSubtitleEnum.filter_formats()
@@ -258,7 +258,7 @@ class LlmCheckerFacade(BaseObject):
         ]
         headers = ['id', '源字幕', '直译', '精细', '深思', '-']
         sizes = [80, 400, 400, 400, 400]
-        return GuiTool.build_tv_model(tv=self.ui_dialog.tbvDemo,
+        return GuiTool.build_tv_model(tv=self.ui.tbvDemo,
                                       data=data,
                                       headers=headers,
                                       sizes=sizes)
@@ -273,22 +273,22 @@ class LlmCheckerFacade(BaseObject):
     def _on_run_translate_(self) -> None:
         import copy
 
-        thread = AiTranslateThread(service=self.translate_service,
-                                   asr_data=copy.deepcopy(self.asr_data),
-                                   config={
-                                       "need_translate": True,  # 是否翻译
-                                       "translate_mode": "",
-                                       "source_language": "",  # 源语言
-                                       "target_language": self.ui_dialog.cbbTargetLanguage.currentText(),  # 目标语言
-                                       "llm_api_url": self.ui_dialog.edtBaseUrl.text(),
-                                       "llm_api_key": self.ui_dialog.edtAPiKey.text(),
-                                       "llm_model": self.ui_dialog.cbbLlmModel.currentText(),
-                                       "need_remove_punctuation": True  # 是否删除句子中的符号
-                                   })
-        thread.message_signal.connect(self._translate_msg_display_)
-        # thread.end_signal.connect(self._write_to_tv_)
-
-        thread.start()
+        if self.asr_data:
+            thread = AiTranslateThread(service=self.translate_service,
+                                       asr_data=copy.deepcopy(self.asr_data),
+                                       config={
+                                           "need_translate": True,  # 是否翻译
+                                           "translate_mode": "",
+                                           "source_language": "",  # 源语言
+                                           "target_language": self.ui.cbbTargetLanguage.currentText(),  # 目标语言
+                                           "llm_api_url": self.ui.edtBaseUrl.text(),
+                                           "llm_api_key": self.ui.edtAPiKey.text(),
+                                           "llm_model": self.ui.cbbLlmModel.currentText(),
+                                           "need_remove_punctuation": True  # 是否删除句子中的符号
+                                       })
+            thread.message_signal.connect(self._translate_msg_display_)
+            # thread.end_signal.connect(self._write_to_tv_)
+            thread.start()
 
     def _translate_msg_display_(self, msg: str):
         self.log_warning(f"AI翻译：{msg}")

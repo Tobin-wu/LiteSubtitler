@@ -8,7 +8,7 @@ class SupportedSubtitleEnum(Enum):
     SRT = "srt"
     ASS = "ass"
     JSON = "json"
-    TXT = "txt"
+    # TXT = "txt"
 
     @classmethod
     def filter_formats(cls):
