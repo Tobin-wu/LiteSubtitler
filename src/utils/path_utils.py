@@ -1,9 +1,14 @@
 # coding: utf8
 import os
+import re
 
 
 class PathUtils:
     """路径工具类，提供与系统路径相关的常用方法。"""
+
+    @staticmethod
+    def have_space(file_path: str) -> bool:
+        return re.search(r"\s", file_path)
 
     @staticmethod
     def append_to_env_path(target_path: str) -> None:

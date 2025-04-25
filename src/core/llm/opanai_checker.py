@@ -1,6 +1,7 @@
 # coding: utf8
-import openai
 from typing import List, Tuple
+
+import openai
 
 
 class OpenAiChecker:

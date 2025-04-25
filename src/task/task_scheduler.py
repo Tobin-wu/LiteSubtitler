@@ -22,7 +22,7 @@ class TaskScheduler(BaseObject):
     """
 
     def __init__(self, max_concurrent_tasks: int = 1, log_to_ui_func: Optional[Callable] = None):
-        """初始化任务调度器。
+        """初始化实例。
 
         Args:
             max_concurrent_tasks (int): 最大并发任务数，默认为 1。

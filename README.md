@@ -21,6 +21,7 @@
 - **下载Window压缩包**: 解压后就可以使用；
    - Gitee:  [Window缩包（LiteSubtitler-window-XXX.zip）](https://gitee.com/tobinwu/LiteSubtitler/releases)
    - Github: [Window压缩包（LiteSubtitler-window-XXX.zip 或者 LiteSubtitler-window-XXX-full.7z）](https://github.com/Tobin-wu/LiteRecorder/releases)
+   - 飞书下载: [飞书共享文件](https://tcnch14ftecp.feishu.cn/drive/folder/KUwXfwXyZlQEJ1dKXxMcjtvRnvb)
 - **第一次使用**: 建议下载 -full.7z 版本，-full.7z 文件中打包了 FasterWhisper工具 和 small 模型，而对应的zip文件则不包括FasterWhisper工具和模型；
 - - **解压**: -full.7z 文件后，运行其中的 LiteSubtitler.exe 就可以；
 - **升级**: 只是要下载对应版本的 ZIP文件，解压后覆盖对应文件即可；
@@ -261,8 +262,23 @@ FasterWhisper用于做语音转文字处理。
 ```
 
 ### 7.2、版本历史
+
 #### v0.0.3
 - 字幕合成工具：打开字幕文件，编辑字幕，选择视频文件，合成；导出台词（去掉序号和时间）；另存字幕（把编辑后的字幕另存出来）。
 - “配置...”菜单：把首页的大部分设置转到这个菜单里面处理。
 - CUDA自适应：添加auto类型，用于自动检测并使用CUDA。
 - "飞书下载..."菜单：通过共享出来的飞书云盘来下载“千言字幕助手”的新版本。
+
+#### v0.0.4 - 20250425
+- 增加图片嵌入工具：
+   - 1、视频片头图片：在视频片头插入持续数秒的图片。
+   - 2、视频片尾图片：在视频片尾插入持续数秒的图片。
+   - 3、嵌入图片：在视频上四个角嵌入图片，提供嵌入两个图片的功能，支持透明度，支持重定义图片尺寸，支持多时段嵌入，可以指定嵌入位置。
+- 图片嵌入工具适用场景：
+   - 品牌宣传视频：在片头片尾添加品牌LOGO，在视频角落嵌入产品图片或二维码。
+   - 教育培训内容：在视频角落嵌入机构标志或讲师信息。
+   - 电商产品展示：在视频中嵌入产品细节图或购买二维码。
+   - 自媒体创作：添加个人水印、频道标志或赞助商信息。
+   - 活动纪念视频：嵌入活动LOGO或赞助商信息。
+   - 企业汇报视频：添加公司标识和数据图表辅助说明。
+   - 婚礼/庆典视频：嵌入新人照片或纪念性标志。 

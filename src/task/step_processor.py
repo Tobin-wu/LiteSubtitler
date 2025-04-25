@@ -1,5 +1,6 @@
 # coding: utf8
 from PyQt6.QtCore import pyqtSignal
+
 from core.base_object import BaseObject
 
 
@@ -14,7 +15,7 @@ class StepProcessor(BaseObject):
     progress_signal = pyqtSignal(str, int, str)  # 信号：传递任务ID、进度值和步骤描述
 
     def __init__(self, steps, parent=None, log_to_ui_func=None):
-        """初始化步骤处理器。
+        """初始化实例。
 
         Args:
             steps (list): 包含步骤信息的列表，每个步骤是一个元组，格式为：

@@ -1,9 +1,15 @@
 # coding: utf8
+import time
 import uuid
 
 
 class UuidUtils:
     """UUID 工具类，提供 UUID 生成和格式化功能。"""
+
+    @staticmethod
+    def generate_time_id() -> str:
+        """生成一个时间戳的ID。"""
+        return str(int(time.time() * 100))
 
     @staticmethod
     def generate_guid() -> str:
@@ -22,3 +28,7 @@ class UuidUtils:
         unique_id_str = unique_id.hex
 
         return unique_id_str
+
+
+if __name__ == '__main__':
+    print(UuidUtils.generate_time_id())

@@ -1,8 +1,9 @@
 # coding: utf8
 from typing import Optional, Dict, Any
+
 from core.asr.asr_data import ASRData
-from core.base_object import BaseObject
 from core.asr.faster_whisper import FasterWhisper
+from core.base_object import BaseObject
 from core.srt.srt_segmentor import SrtSegmentor
 from utils.dict_utils import DictUtils
 

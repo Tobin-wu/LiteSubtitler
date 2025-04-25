@@ -16,7 +16,7 @@ class TaskObj(BaseObject):
     """
 
     def __init__(self, task_id: str, finished_function, process_function, log_to_ui_func, *args, **kwargs):
-        """初始化任务对象。
+        """初始化实例。
 
         Args:
             task_id (str): 任务的唯一标识。

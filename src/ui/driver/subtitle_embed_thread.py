@@ -11,7 +11,7 @@ class SubtitleEmbedThread(QThread):
     message_signal = pyqtSignal(str)  # 定义信号用于传递消息
     end_signal = pyqtSignal(str)  # 定义信号用于结束消息
 
-    def __init__(self, service: VideoService, asr_data: ASRData, config, video_file: str):
+    def __init__(self, service: VideoService, asr_data: ASRData, config, video_file: str, use_cuda: bool = False):
         super().__init__()
         self.is_running = True
         self.service = service
@@ -19,6 +19,7 @@ class SubtitleEmbedThread(QThread):
         self._args = config
         self.video_file = video_file
         service.reset_args(config)
+        service.reset_cuda(use_cuda)
 
     def run(self):
         import copy

@@ -3,8 +3,8 @@ import json
 import re
 from pathlib import Path
 
-from .asr_data import ASRData
 from core.asr.asr_data_seg import ASRDataSeg
+from .asr_data import ASRData
 
 
 class AsrDataBuilder:

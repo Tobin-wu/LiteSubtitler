@@ -164,8 +164,10 @@ class Ui_dlgSubtitleEmbed(object):
         _translate = QtCore.QCoreApplication.translate
         dlgSubtitleEmbed.setWindowTitle(_translate("dlgSubtitleEmbed", "字幕合成器"))
         self.lblVideoFile.setText(_translate("dlgSubtitleEmbed", "视频文件"))
+        self.edtVideoFile.setPlaceholderText(_translate("dlgSubtitleEmbed", "选取要处理的视频文件"))
         self.btnVideoFile.setText(_translate("dlgSubtitleEmbed", "..."))
         self.lblSubtitleFile.setText(_translate("dlgSubtitleEmbed", "字幕文件"))
+        self.edtSubtitleFile.setPlaceholderText(_translate("dlgSubtitleEmbed", "选取要嵌入的字幕文件"))
         self.btnSubtitleFile.setText(_translate("dlgSubtitleEmbed", "..."))
         self.btnRun.setText(_translate("dlgSubtitleEmbed", "合成"))
         self.btnSave.setText(_translate("dlgSubtitleEmbed", "保存字幕"))

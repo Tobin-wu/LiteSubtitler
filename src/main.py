@@ -1,7 +1,7 @@
 # coding: utf8
+import ctypes
 import os
 import sys
-import ctypes
 
 from PyQt6.QtCore import QFile, QTextStream
 from PyQt6.QtGui import QIcon
@@ -19,7 +19,7 @@ class MainApp(BaseObject):
     """主应用程序类，负责初始化界面、处理用户交互和任务调度。"""
 
     def __init__(self):
-        """初始化应用程序实例。"""
+        """初始化实例。"""
         super().__init__()
 
         # 初始化Qt应用程序

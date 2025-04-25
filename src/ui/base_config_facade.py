@@ -12,7 +12,7 @@ class BaseConfigFacade(BaseObject):
     """配置有关的外观类。"""
 
     def __init__(self, log_to_ui_func, config: dict):
-        """初始化应用程序实例。"""
+        """初始化实例。"""
         super().__init__(log_to_ui_func=log_to_ui_func)
         # 系统配置信息
         self.config_args = config

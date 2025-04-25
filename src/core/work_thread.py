@@ -1,5 +1,6 @@
 # coding: utf8
 from typing import Dict, Callable, Any
+
 from PyQt6.QtCore import QThread, pyqtSignal
 
 

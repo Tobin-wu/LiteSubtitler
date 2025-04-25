@@ -16,6 +16,9 @@ class ASRDataSeg:
         self.start_time = start_time
         self.end_time = end_time
 
+    def contains(self, pos: int) -> bool:
+        return self.start_time <= pos < self.end_time
+
     def to_srt_ts(self) -> str:
         """
         转换为 SRT 时间戳格式。

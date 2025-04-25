@@ -126,7 +126,7 @@
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>
          </property>
-         <layout class="QHBoxLayout" name="hlytSubtitle" stretch="0,0,0,0,1,2">
+         <layout class="QHBoxLayout" name="hlytSubtitle" stretch="0,0,1,2">
           <property name="leftMargin">
            <number>10</number>
           </property>
@@ -143,20 +143,6 @@
            <widget class="QCheckBox" name="ckbEmbedSubtitle">
             <property name="text">
              <string>把字幕合成到视频中</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="ckbSoftSubtitle">
-            <property name="text">
-             <string>使用软字幕</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="ckbRemoveTempFile">
-            <property name="text">
-             <string>是否删除处理中产生的文件</string>
             </property>
            </widget>
           </item>
@@ -528,6 +514,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </property>
     <addaction name="actLlmChecker"/>
     <addaction name="actSubtitleEmbed"/>
+    <addaction name="actImageEmbed"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -603,6 +590,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
   <action name="actFeiShu">
    <property name="text">
     <string>飞书下载...</string>
+   </property>
+  </action>
+  <action name="actImageEmbed">
+   <property name="text">
+    <string>图片嵌入工具</string>
    </property>
   </action>
  </widget>

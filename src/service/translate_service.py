@@ -5,9 +5,9 @@ from typing import Dict, Optional, Callable, Any
 from PyQt6.QtCore import pyqtSignal
 
 from config import PROMPT_PATH
+from core.asr.asr_data import ASRData
 from core.base_object import BaseObject
 from core.llm.llm_translater import LlmTranslater
-from core.asr.asr_data import ASRData
 from core.srt.srt_tool import SrtTool
 from enums.translate_mode_enum import TranslateModeEnum
 from settings.prompt_setting import SUMMARIZER_PROMPT, TRANSLATE_PROMPT_FAST, TRANSLATE_PROMPT_PRECISE, \

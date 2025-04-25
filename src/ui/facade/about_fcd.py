@@ -15,7 +15,7 @@ class AboutFacade(BaseObject):
     _IMAGE_BASE_URL_ = 'https://gitee.com/tobinwu/LiteSubtitler/raw/master/docs'
 
     def __init__(self, func_write_log):
-        """初始化LLM检测工具实例。"""
+        """初始化实例。"""
         super().__init__(log_to_ui_func=func_write_log)
 
         self.dialog = QDialog()

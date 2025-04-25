@@ -3,11 +3,11 @@ import os
 import subprocess
 import sys
 
+from config import ICON_REC
+from model.unique_key_value_map import UniqueKeyValueMap
 from ui.data.array_table_model import ArrayTableModel
 from ui.driver.gui_tool import GuiTool
 from ui.gui.main_frm import Ui_frmMain
-from config import ICON_REC
-from model.unique_key_value_map import UniqueKeyValueMap
 
 
 class MainFrmHelper:
@@ -33,6 +33,9 @@ class MainFrmHelper:
         ui.btnStop.setIcon(GuiTool.build_icon(ICON_REC.get('stop')))
 
         ui.actLlmChecker.setIcon(GuiTool.build_icon(ICON_REC.get('llm_check_tool')))
+        ui.actImageEmbed.setIcon(GuiTool.build_icon(ICON_REC.get('png')))
+        ui.actSubtitleEmbed.setIcon(GuiTool.build_icon(ICON_REC.get('srt')))
+
         ui.actExit.setIcon(GuiTool.build_icon(ICON_REC.get('exit')))
         ui.actGitee.setIcon(GuiTool.build_icon(ICON_REC.get('gitee')))
         ui.actGithub.setIcon(GuiTool.build_icon(ICON_REC.get('github')))
@@ -108,9 +111,7 @@ class MainFrmHelper:
         ui_map.add(("translate_args", "target_language"), ui.cbbTargetLanguage.objectName())
 
         # 字幕相关参数映射
-        ui_map.add(("subtitle_args", "need_remove_temp_file"), ui.ckbRemoveTempFile.objectName())
         ui_map.add(("subtitle_args", "is_embed_subtitle"), ui.ckbEmbedSubtitle.objectName())
-        ui_map.add(("subtitle_args", "is_soft_subtitle"), ui.ckbSoftSubtitle.objectName())
         ui_map.add(("subtitle_args", "subtitle_layout"), ui.cbbSubtitleLayout.objectName())
 
         return ui_map

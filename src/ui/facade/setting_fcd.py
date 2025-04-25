@@ -1,10 +1,9 @@
 # coding: utf8
 import os
-from enum import Enum
-from typing import Type, Any, List, Optional, Callable
+from typing import List
 
-from PyQt6.QtGui import QColor
-from PyQt6.QtWidgets import QFileDialog, QComboBox, QFrame, QWidget, QDialog
+from PyQt6.QtGui import QColor, QIcon
+from PyQt6.QtWidgets import QFileDialog, QFrame, QWidget, QDialog
 
 from config import ConfigTool, ICON_REC, FASTER_WHISPER_URL, LLM_ACCOUNT_URL
 from core.llm.opanai_checker import OpenAiChecker
@@ -21,8 +20,8 @@ from ui.gui.setting_dlg import Ui_dlgSetting
 class SettingFacade(BaseConfigFacade):
     """配置外观类，用于调整系统配置信息。"""
 
-    def __init__(self, func_write_log, config):
-        """初始化应用程序实例。"""
+    def __init__(self, func_write_log, config, icon: QIcon = None):
+        """初始化实例。"""
         super().__init__(log_to_ui_func=func_write_log, config=config)
 
         # 初始化主窗口
@@ -39,7 +38,7 @@ class SettingFacade(BaseConfigFacade):
         self.dialog.exec()
 
     def _init_form_(self) -> None:
-        """初始化主窗口界面组件。"""
+        """初始化窗口。"""
         self._fill_icon_()
         # 组件初始化和数据绑定
         self._init_form_comp_()

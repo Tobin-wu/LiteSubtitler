@@ -180,7 +180,6 @@ apps/static
 .dev
 poetry.lock
 /build
-/tests
 /setting.json
 package.bat
 LiteSubtitler.spec

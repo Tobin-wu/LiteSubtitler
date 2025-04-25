@@ -5,19 +5,19 @@ from typing import LiteralString
 
 from PyQt6.QtWidgets import QApplication
 
-from core.asr.asr_data_builder import AsrDataBuilder
 from core.asr.asr_data import ASRData
+from core.asr.asr_data_builder import AsrDataBuilder
 from core.base_object import BaseObject
-from enums.supported_subtitle_enum import SupportedSubtitleEnum
-from task.step_processor import StepProcessor
-from task.task_scheduler import TaskScheduler
 from enums.supported_audio_enum import SupportedAudioEnum
+from enums.supported_subtitle_enum import SupportedSubtitleEnum
 from enums.supported_video_enum import SupportedVideoEnum
 from model.file_vo import FileVO
-from service.video_service import VideoService
 from service.asr_service import AsrService
 from service.translate_service import TranslateService
+from service.video_service import VideoService
+from task.step_processor import StepProcessor
 from task.task_obj import TaskObj
+from task.task_scheduler import TaskScheduler
 from ui.data.array_table_model import ArrayTableModel
 from utils.file_utils import FileUtils
 
@@ -56,6 +56,10 @@ class MainController(BaseObject):
 
         self.task_count = 0  # 未处理的任务数
         self.finished_all_callback = finished_all_callback
+
+        self.use_cuda = self.video_service.check_cuda_available()
+        if self.use_cuda:
+            self.log_info("FFmpeg 可以使用 CUDA 加速。")
 
     def stop(self):
         """

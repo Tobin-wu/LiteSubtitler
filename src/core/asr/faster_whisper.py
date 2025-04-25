@@ -3,13 +3,13 @@ import os
 import re
 import shutil
 import subprocess
-from pathlib import Path
 import tempfile
+from pathlib import Path
 from typing import List
 
 from enums.faster_whisper_enums import FasterWhisperDeviceEnum
-from .asr_data_seg import ASRDataSeg
 from .asr_data_builder import AsrDataBuilder
+from .asr_data_seg import ASRDataSeg
 from .base_asr import BaseASR
 
 
@@ -61,7 +61,7 @@ class FasterWhisper(BaseASR):
                  max_comma: int = 20,
                  max_comma_cent: int = 50,
                  log_to_ui_func=None):
-        """初始化 FasterWhisper 实例。
+        """初始化实例。
 
         Args:
             audio_path (str): 音频文件路径。

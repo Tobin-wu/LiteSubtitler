@@ -1,15 +1,12 @@
 # coding: utf8
 import os
-import re
-import subprocess
 import time
-from pathlib import Path
 from typing import Literal, Optional, Dict, Callable, Any
 
-from config import ConfigTool
 from core.asr.asr_data import ASRData
-from core.asr.asr_data_builder import AsrDataBuilder
 from core.base_object import BaseObject
+from core.video.ffmpeg_handler import FfmpegHandler
+from core.video.image_embed_arg import ImageEmbedArg
 from model.file_vo import FileVO
 from utils.dict_utils import DictUtils
 
@@ -32,6 +29,7 @@ class VideoService(BaseObject):
             log_to_ui_func: 用于将日志输出到 UI 的函数。
         """
         super().__init__(log_to_ui_func=log_to_ui_func)
+
         self._args = {
             "subtitle_layout": "译文在上",  # 字幕布局
             "quality": 'medium',
@@ -62,7 +60,136 @@ class VideoService(BaseObject):
         if 'default_style' in the_args and 'secondary_style' in the_args:
             self._args["style_str"] = ASRData.read_ass_style(the_args)
 
-    def extract_mp3(self, video_file_path: str) -> str:
+    def reset_cuda(self, use_cuda: bool) -> None:
+        self._args['use_cuda'] = use_cuda
+
+    def image_embed_mp4(self,
+                        video_file: str,
+                        out_video_file: str,
+                        image_1_arg: ImageEmbedArg,
+                        image_2_arg: ImageEmbedArg):
+        ffmpeg_handler = FfmpegHandler(log_to_ui_func=self.log_to_ui_func)
+        try:
+            if image_1_arg.file_path and image_2_arg.file_path:
+                return ffmpeg_handler.embed_2_image(video_file_path=video_file,
+                                                    out_video_path=out_video_file,
+                                                    image_1_arg=image_1_arg,
+                                                    image_2_arg=image_2_arg,
+                                                    use_cuda=self._args['use_cuda'])
+            else:
+                image_arg = image_1_arg
+                if not image_1_arg.file_path:
+                    image_arg = image_2_arg
+                if image_arg:
+                    return ffmpeg_handler.embed_1_image(video_file_path=video_file,
+                                                        out_video_path=out_video_file,
+                                                        image_arg=image_arg,
+                                                        use_cuda=self._args['use_cuda'])
+            return None
+        finally:
+            ffmpeg_handler.stop()
+
+    def image_concat_mp4(self,
+                         video_file: str,
+                         out_video_file: str,
+                         start_image_file: str = None,
+                         end_image_file: str = None,
+                         start_seconds: int = 2,
+                         end_seconds: int = 2,
+                         scale: str = '1280:720',
+                         frame_rate: int = 30,
+                         bit_rate: str = '1M',
+                         audio_sampling_rate: int = 44100,
+                         audio_channel_layout: str = 'mono',
+                         source_video_to_mp4: bool = False,  # video_file是否需要转为MP4
+                         delete_temp: bool = True):
+        """
+        把图片拼接到视频前后，就是在视频前或者视频后拼接图片生成的视频。
+
+        Args:
+            video_file: 视频文件。
+            out_video_file: 输出视频文件。
+            start_image_file(str): 加到视频头的图片文件。
+            end_image_file(str): 加到视频尾的图片文件。
+            start_seconds(int): 开始图片的视频时长。
+            end_seconds(int): 结束图片的视频时长。
+            scale(str): 分辨率。
+            frame_rate(int): 帧率。
+            bit_rate(str): 比特率。
+            audio_sampling_rate(int): 音频采样率。
+            audio_channel_layout(str): 音频声道。
+            source_video_to_mp4(bool): video_file是否需要转为MP4。
+            delete_temp(bool): 是否删除临时文件。
+        """
+        video_file_vo = FileVO(video_file)
+        if not video_file_vo.is_file:
+            raise FileNotFoundError(f"视频文件 {video_file} 不存在")
+
+        if not start_image_file and not end_image_file:
+            raise FileNotFoundError(f"必须指定一个图片文件")
+
+        ffmpeg_handler = FfmpegHandler(log_to_ui_func=self.log_to_ui_func)
+        try:
+            start_image_mp4 = None
+            if start_image_file:
+                start_image_mp4 = ffmpeg_handler.image_to_mp4(image_file_path=start_image_file,
+                                                              seconds=start_seconds,
+                                                              scale=scale,
+                                                              frame_rate=frame_rate,
+                                                              audio_sampling_rate=audio_sampling_rate)
+            end_image_mp4 = None
+            if end_image_file:
+                end_image_mp4 = ffmpeg_handler.image_to_mp4(image_file_path=end_image_file,
+                                                            seconds=end_seconds,
+                                                            scale=scale,
+                                                            frame_rate=frame_rate,
+                                                            audio_sampling_rate=audio_sampling_rate)
+            tmp_file_path = None
+            if source_video_to_mp4:
+                tmp_file_path = os.path.join(video_file_vo.file_dir, video_file_vo.file_only_name + '_tmp.mp4')
+                ffmpeg_handler.to_mp4(video_file_path=video_file,
+                                      out_file_path=tmp_file_path,
+                                      scale=scale,
+                                      frame_rate=frame_rate,
+                                      bit_rate=bit_rate,
+                                      use_cuda=self._args['use_cuda'])
+                if os.path.exists(tmp_file_path):
+                    video_file = tmp_file_path
+
+            if os.path.exists(video_file):
+                if start_image_mp4 or end_image_mp4:
+                    concat_files = []
+                    if start_image_mp4 and os.path.exists(start_image_mp4):
+                        concat_files.append(start_image_mp4)
+
+                    concat_files.append(video_file)
+
+                    if end_image_mp4 and os.path.exists(end_image_mp4):
+                        concat_files.append(end_image_mp4)
+
+                    # out_mp4 = os.path.join(video_file_vo.file_dir,
+                    #                        video_file_vo.file_only_name + '_' + UuidUtils.generate_time_id() + '.mp4')
+                    ffmpeg_handler.concat_mp4(out_file_path=out_video_file,
+                                              concat_files=concat_files,
+                                              scale=scale,
+                                              frame_rate=frame_rate,
+                                              bit_rate=bit_rate,
+                                              use_cuda=self._args['use_cuda'])
+
+                    if delete_temp:
+                        if start_image_mp4 and os.path.exists(start_image_mp4):
+                            os.remove(start_image_mp4)
+                        if end_image_mp4 and os.path.exists(end_image_mp4):
+                            os.remove(end_image_mp4)
+                        if tmp_file_path and os.path.exists(tmp_file_path):
+                            os.remove(tmp_file_path)
+
+                    return out_video_file
+            return None
+        finally:
+            ffmpeg_handler.stop()
+
+    def extract_mp3(self, video_file_path: str) -> str | None:
         """
         从视频文件中提取 MP3 音频。
 
@@ -78,7 +205,7 @@ class VideoService(BaseObject):
         """
         return self._extract_audio(video_file_path, codec='libmp3lame', ext_name='mp3')
 
-    def extract_wav(self, video_file_path: str, codec: str = 'pcm_s16le') -> str:
+    def extract_wav(self, video_file_path: str, codec: str = 'pcm_s16le') -> str | None:
         """
         从视频文件中提取 WAV 音频。
 
@@ -98,7 +225,7 @@ class VideoService(BaseObject):
             raise ValueError(f"不支持的 codec 值: {codec}")
         return self._extract_audio(video_file_path, codec=codec, ext_name='wav')
 
-    def _extract_audio(self, video_file_path: str, codec: str, ext_name: str) -> str:
+    def _extract_audio(self, video_file_path: str, codec: str, ext_name: str) -> str | None:
         """
         使用 FFmpeg 从视频文件中提取音频。
 
@@ -122,34 +249,15 @@ class VideoService(BaseObject):
         os.makedirs(output_dir, exist_ok=True)
 
         output = os.path.join(output_dir, f"{video_file_vo.file_only_name}.{ext_name}")
-        cmd = [
-            'ffmpeg',
-            '-i', video_file_path,
-            '-map', '0:a:0',  # 第一个音频流
-            '-ac', '1',  # 单声道
-            '-ar', '16000',  # 16K 采样率
-            '-af', 'aresample=async=1',  # 处理音频同步问题
-            '-y',  # 覆盖输出文件
-            output
-        ]
-        self.log_info(f"正在提取音频流...，执行命令: {' '.join(cmd)}")
 
+        ffmpeg_handler = FfmpegHandler(log_to_ui_func=self.log_to_ui_func)
         try:
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                check=True,
-                encoding='utf-8',
-                errors='replace',
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
-            )
-            if result.returncode == 0 and os.path.exists(output):
+            ffmpeg_handler.extract_audio(video_file_path=video_file_path, out_file_path=output)
+            if os.path.exists(output):
                 return output
-            else:
-                raise RuntimeError(f"音频转换失败: {result.stderr}")
-        except Exception as e:
-            self.log_exception(f"音频转换出错: {str(e)}")
-            raise RuntimeError(f"音频转换出错: {e}")
+            return None
+        finally:
+            ffmpeg_handler.stop()
 
     def embed_subtitles(self, video_file_path: str, asr_data: ASRData, vcodec: str = 'libx264') -> ASRData:
         """
@@ -204,7 +312,7 @@ class VideoService(BaseObject):
                                 'ultrafast', 'superfast', 'veryfast', 'faster', 'fast',
                                 'medium', 'slow', 'slower', 'veryslow'
                             ],
-                            vcodec: str) -> str:
+                            vcodec: str) -> str | None:
         """
         使用硬字幕将字幕嵌入到视频文件中。
 
@@ -221,34 +329,20 @@ class VideoService(BaseObject):
         Raises:
             RuntimeError: 如果字幕嵌入失败。
         """
-        self.log_info("使用硬字幕")
-        subtitle_file = Path(subtitle_file).as_posix().replace(':', r'\:')
-        vf = f"subtitles='{subtitle_file}'"
+        ffmpeg_handler = FfmpegHandler(log_to_ui_func=self.log_to_ui_func)
+        try:
+            ffmpeg_handler.add_hard_subtitles(video_file_path=video_file_path,
+                                              subtitle_file=subtitle_file,
+                                              out_file_path=output,
+                                              quality=quality,
+                                              vcodec=vcodec)
+            if os.path.exists(output):
+                return output
+            return None
+        finally:
+            ffmpeg_handler.stop()
 
-        out_vo = FileVO(output)
-        if out_vo.file_extension == 'webm':
-            vcodec = 'libvpx-vp9'
-            self.log_info("WebM 格式视频，使用 libvpx-vp9 编码器")
-
-        use_cuda = self.check_cuda_available()
-        cmd = ['ffmpeg']
-        if use_cuda:
-            self.log_info("使用 CUDA 加速")
-            cmd.extend(['-hwaccel', 'cuda'])
-        cmd.extend([
-            '-i', video_file_path,
-            '-acodec', 'copy',  # 拷贝音频
-            '-vcodec', vcodec,  # 视频编码
-            '-preset', quality,  # 压制方式
-            '-vf', f' {vf} ',  # 字幕
-            '-y',  # 覆盖输出文件
-            output
-        ])
-
-        self.log_info(f"添加硬字幕执行命令: {' '.join(cmd)}")
-        return self._run_ffmpeg_command(cmd, "视频合成")
-
-    def _add_soft_subtitles(self, video_file_path: str, subtitle_file: str, output: str) -> str:
+    def _add_soft_subtitles(self, video_file_path: str, subtitle_file: str, output: str) -> str | None:
         """
         使用软字幕将字幕嵌入到视频文件中。
 
@@ -263,85 +357,25 @@ class VideoService(BaseObject):
         Raises:
             RuntimeError: 如果字幕嵌入失败。
         """
-        self.log_info("使用软字幕")
-        cmd = [
-            'ffmpeg',
-            '-i', video_file_path,
-            '-i', subtitle_file,
-            '-c:v', 'copy',  # 拷贝视频
-            '-c:a', 'copy',  # 拷贝音频
-            '-c:s', 'mov_text',  # 字幕编码
-            output,
-            '-y'  # 覆盖输出文件
-        ]
-        self.log_info(f"添加软字幕执行命令: {' '.join(cmd)}")
-        return self._run_ffmpeg_command(cmd, "视频合成")
-
-    def _run_ffmpeg_command(self, cmd: list, task_name: str) -> str:
-        """
-        执行 FFmpeg 命令并处理输出。
-
-        Args:
-            cmd: FFmpeg 命令列表。
-            task_name: 任务名称，用于日志记录。
-
-        Returns:
-            输出文件路径。
-
-        Raises:
-            RuntimeError: 如果命令执行失败。
-        """
-        process = None
+        ffmpeg_handler = FfmpegHandler(log_to_ui_func=self.log_to_ui_func)
         try:
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True,
-                encoding='utf-8',
-                errors='replace',
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
-            )
-
-            total_duration = None
-            current_time = 0
-            pre_progress = -1
-
-            while True:
-                output_line = process.stderr.readline()
-                if not output_line or (process.poll() is not None):
-                    break
-
-                if total_duration is None:
-                    duration_match = re.search(r'Duration: (\d{2}):(\d{2}):(\d{2}\.\d{2})', output_line)
-                    if duration_match:
-                        h, m, s = map(float, duration_match.groups())
-                        total_duration = h * 3600 + m * 60 + s
-                        self.log_info(f"视频总时长: {total_duration}秒")
-
-                time_match = re.search(r'time=(\d{2}):(\d{2}):(\d{2}\.\d{2})', output_line)
-                if time_match:
-                    h, m, s = map(float, time_match.groups())
-                    current_time = h * 3600 + m * 60 + s
-
-                if total_duration:
-                    progress = round((current_time / total_duration) * 100)
-                    if pre_progress != progress:
-                        self.log_info(f"{progress}% : 正在合成")
-                        pre_progress = progress
-
-            return_code = process.wait()
-            if return_code != 0:
-                error_info = process.stderr.read()
-                raise RuntimeError(f"{task_name}失败: {error_info}")
-            self.log_info(f"{task_name}完成")
-            return cmd[-1]  # 返回输出文件路径
-        except Exception as e:
-            self.log_error(f"{task_name}出错: {str(e)}")
-            raise
+            ffmpeg_handler.add_soft_subtitles(video_file_path=video_file_path,
+                                              subtitle_file=subtitle_file,
+                                              out_file_path=output)
+            if os.path.exists(output):
+                return output
+            return None
         finally:
-            if process and process.poll() is None:
-                process.kill()
+            ffmpeg_handler.stop()
+
+    def read_use_cuda(self) -> bool:
+        if 'use_cuda' in self._args:
+            if self._args['use_cuda'] is None:
+                self._args['use_cuda'] = self.check_cuda_available()
+        else:
+            self._args['use_cuda'] = self.check_cuda_available()
+
+        return self._args['use_cuda']
 
     def check_cuda_available(self) -> bool:
         """
@@ -350,33 +384,11 @@ class VideoService(BaseObject):
         Returns:
             CUDA 是否可用。
         """
-        self.log_info("检查 CUDA 是否可用")
+        ffmpeg_handler = FfmpegHandler(log_to_ui_func=self.log_to_ui_func)
         try:
-            result = subprocess.run(
-                ['ffmpeg', '-hwaccels'],
-                capture_output=True,
-                text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
-            )
-            if 'cuda' not in result.stdout.lower():
-                self.log_info("CUDA 不在支持的硬件加速器列表中")
-                return False
-
-            result = subprocess.run(
-                ['ffmpeg', '-hide_banner', '-init_hw_device', 'cuda'],
-                capture_output=True,
-                text=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
-            )
-
-            if any(error in result.stderr.lower() for error in ['cannot load cuda', 'failed to load', 'error']):
-                self.log_info("CUDA 设备初始化失败")
-                return False
-            self.log_info("CUDA 可用")
-            return True
-        except Exception as e:
-            self.log_error(f"检查 CUDA 出错: {str(e)}")
-            return False
+            return ffmpeg_handler.check_cuda_available()
+        finally:
+            ffmpeg_handler.stop()
 
     def get_video_info(self, file_path: str) -> Dict[str, Any]:
         """获取视频文件的详细信息。
@@ -387,93 +399,8 @@ class VideoService(BaseObject):
         Returns:
             Dict[str, Any]: 包含视频信息的字典。如果发生错误，返回的字典中所有值将被初始化为空字符串或0。
         """
-        # 初始化视频信息字典
-        video_info = {
-            'file_name': Path(file_path).stem,
-            'duration_seconds': 0,
-            'bitrate_kbps': 0,
-            'video_codec': '',
-            'width': 0,
-            'height': 0,
-            'fps': 0,
-            'audio_codec': '',
-            'audio_sampling_rate': 0,
-            'thumbnail_path': '',
-        }
-
+        ffmpeg_handler = FfmpegHandler(log_to_ui_func=self.log_to_ui_func)
         try:
-            # 构建ffmpeg命令
-            cmd = ["ffmpeg", "-i", file_path]
-            self.logger.info(f"获取视频信息执行命令: {' '.join(cmd)}")
-
-            # 执行ffmpeg命令
-            result = subprocess.run(
-                cmd,
-                capture_output=True,
-                text=True,
-                encoding='utf-8',
-                errors='replace',
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
-            )
-
-            # 获取ffmpeg输出信息
-            info = result.stderr
-
-            # 提取视频时长
-            if duration_match := re.search(r'Duration: (\d+):(\d+):(\d+\.\d+)', info):
-                hours, minutes, seconds = map(float, duration_match.groups())
-                video_info['duration_seconds'] = hours * 3600 + minutes * 60 + seconds
-                self.log_info(f"视频时长: {video_info['duration_seconds']}秒")
-
-            # 提取比特率
-            if bitrate_match := re.search(r'bitrate: (\d+) kb/s', info):
-                video_info['bitrate_kbps'] = int(bitrate_match.group(1))
-
-            # 提取视频流信息
-            if video_stream_match := re.search(
-                    r'Stream #\d+:\d+.*Video: (\w+).*?, (\d+)x(\d+).*?, ([\d.]+) (?:fps|tb)',
-                    info, re.DOTALL
-            ):
-                video_info.update({
-                    'video_codec': video_stream_match.group(1),
-                    'width': int(video_stream_match.group(2)),
-                    'height': int(video_stream_match.group(3)),
-                    'fps': float(video_stream_match.group(4))
-                })
-
-            # 提取音频流信息
-            if audio_stream_match := re.search(
-                    r'Stream #\d+:\d+.*Audio: (\w+).* (\d+) Hz', info
-            ):
-                video_info.update({
-                    'audio_codec': audio_stream_match.group(1),
-                    'audio_sampling_rate': int(audio_stream_match.group(2))
-                })
-
-            return video_info
-
-        except Exception as e:
-            # 记录异常信息并返回初始化的视频信息
-            self.log_exception(f"获取视频信息时出错: {str(e)}")
-            return {k: '' if isinstance(v, str) else 0 for k, v in video_info.items()}
-
-
-if __name__ == '__main__':
-    # 读取配置信息
-    config_args = ConfigTool.read_config_setting()
-
-    # 修改字幕布局为：仅原文
-    config_args['subtitle_args']['subtitle_layout'] = '仅原文'
-
-    # 加载字幕文件
-    asr_data1 = AsrDataBuilder.from_subtitle_file("D:\\tools\\ai\\AppData\\DeepSeek做字幕.srt")
-
-    # 创建视频服务对象
-    video_service = VideoService()
-
-    # 设置视频服务对象的字幕参数
-    video_service.reset_args(config_args['subtitle_args'])
-
-    # 进行合成处理
-    video_file = "D:\\tools\\ai\\AppData\\DeepSeek做字幕.mp4"
-    video_service.embed_subtitles(video_file, asr_data1)
+            return ffmpeg_handler.get_video_info(file_path=file_path)
+        finally:
+            ffmpeg_handler.stop()

@@ -53,6 +53,9 @@
            <property name="readOnly">
             <bool>true</bool>
            </property>
+           <property name="placeholderText">
+            <string>选取要处理的视频文件</string>
+           </property>
           </widget>
          </item>
          <item>
@@ -104,6 +107,9 @@
           <widget class="QLineEdit" name="edtSubtitleFile">
            <property name="readOnly">
             <bool>true</bool>
+           </property>
+           <property name="placeholderText">
+            <string>选取要嵌入的字幕文件</string>
            </property>
           </widget>
          </item>

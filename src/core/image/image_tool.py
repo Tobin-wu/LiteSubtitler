@@ -1,5 +1,9 @@
 # coding: utf8
-from PIL import Image, ImageDraw
+import os
+
+from PIL import Image, ImageDraw, ImageFont
+
+from utils.common_utils import CommonUtils
 
 
 class ImageTool:
@@ -130,6 +134,86 @@ class ImageTool:
             print(f"图像已成功覆盖并保存到 {output_image_path}")
         except Exception as e:
             print(f"处理图像时发生错误: {e}")
+
+    @staticmethod
+    def generate_qr_code_image(output_file,
+                               title_text,
+                               qr_code_path,
+                               logo_path,
+                               image_size: tuple[int, ...] = (1280, 720),
+                               font_path=None,
+                               font_size=24,
+                               spacing=20,
+                               qr_code_size: tuple[int, ...] = (300, 300),
+                               logo_size: tuple[int, ...] = (200, 70),
+                               title_color: tuple[int, ...] = (0, 0, 0),  # black, red=(255, 0, 0)
+                               bk_color: tuple[int, ...] = (255, 255, 255)):  # white
+        # 检查二维码文件是否存在
+        if not os.path.exists(qr_code_path):
+            raise FileNotFoundError(f"二维码文件未找到: {qr_code_path}")
+        # 检查logo文件是否存在
+        if not os.path.exists(logo_path):
+            raise FileNotFoundError(f"logo文件未找到: {logo_path}")
+
+        # 打开二维码图片
+        qr_img = Image.open(qr_code_path).resize(qr_code_size)
+        # 打开logo图片
+        logo_img = Image.open(logo_path).resize(logo_size)
+
+        # 默认字体设置（如果未提供字体路径）
+        if font_path is None:
+            try:
+                # 尝试使用系统默认字体（可能不支持中文）
+                font = ImageFont.load_default()
+                print("警告：未提供字体路径，使用默认字体（可能不支持中文）。")
+            except:
+                raise RuntimeError("无法加载默认字体，请提供有效的字体路径。")
+        else:
+            try:
+                font = ImageFont.truetype(font_path, font_size)
+            except IOError:
+                raise IOError(f"无法加载字体文件: {font_path}")
+
+        # 计算标题尺寸
+        title_left, title_top, title_right, title_bottom = font.getbbox(title_text)
+        title_width = title_right - title_left
+        title_height = title_bottom - title_top
+
+        # 创建新图像
+        width, height = image_size
+        new_img = Image.new('RGB', (width, height), bk_color)
+        draw = ImageDraw.Draw(new_img)
+
+        # 计算总高度
+        total_height = logo_img.height + spacing + title_height + spacing + qr_img.height
+
+        # 计算垂直起始位置，使内容居中
+        start_y = (height - total_height) // 2
+
+        # 绘制logo
+        # 创建圆角蒙版
+        mask = Image.new('L', logo_img.size, 0)
+        draw_mask = ImageDraw.Draw(mask)
+        draw_mask.rounded_rectangle((0, 0, logo_img.width, logo_img.height),
+                                    radius=12,
+                                    fill=CommonUtils.rgb_to_int(240, 240, 180))
+
+        logo_x = (width - logo_img.width) // 2
+        logo_y = start_y
+        new_img.paste(logo_img, (logo_x, logo_y), mask=mask)
+
+        # 绘制标题
+        title_x = (width - title_width) // 2
+        title_y = logo_y + logo_img.height + spacing
+        draw.text((title_x, title_y), title_text, fill=title_color, font=font)
+
+        # 绘制二维码
+        qr_x = (width - qr_img.width) // 2
+        qr_y = title_y + title_height + spacing
+        new_img.paste(qr_img, (qr_x, qr_y))
+
+        # 保存图像
+        new_img.save(output_file)
 
 #
 # base_image_path = '使用群.jpg'  # 基础图像文件路径

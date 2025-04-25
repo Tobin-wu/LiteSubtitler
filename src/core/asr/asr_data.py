@@ -1,9 +1,9 @@
 # coding: utf8
 import json
+import math
 import re
 from pathlib import Path
 from typing import List
-import math
 
 from .asr_data_seg import ASRDataSeg
 

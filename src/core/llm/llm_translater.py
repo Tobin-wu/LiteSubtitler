@@ -7,15 +7,15 @@ from typing import Dict, Callable, List
 import retry
 from openai import OpenAI
 
+from core.base_object import BaseObject
+from core.srt.srt_aligner import SrtAligner
 from core.srt.srt_tool import SrtTool
+from enums.language_enums import AudioLanguageEnum
 from enums.translate_mode_enum import TranslateModeEnum
 from settings.prompt_setting import (
     SUMMARIZER_PROMPT, TRANSLATE_PROMPT
 )
 from utils import json_repair
-from core.base_object import BaseObject
-from core.srt.srt_aligner import SrtAligner
-from enums.language_enums import AudioLanguageEnum
 
 # 定义常量，限制字符串最大长度
 STR_MAX_LEN = 3000

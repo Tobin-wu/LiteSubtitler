@@ -1,10 +1,11 @@
 # coding: utf8
-from pydub import AudioSegment
-import os
 import math
+import os
 
-from utils.common_utils import print_progress_bar
+from pydub import AudioSegment
+
 from model.file_vo import FileVO
+from utils.common_utils import print_progress_bar
 
 
 class AudioSpliter:

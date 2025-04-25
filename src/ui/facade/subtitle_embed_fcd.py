@@ -2,8 +2,8 @@
 import copy
 import os.path
 
-from PyQt6.QtCore import QEvent
-from PyQt6.QtWidgets import QDialog, QWidget, QPushButton, QToolButton, QLineEdit, QComboBox, QTableView
+from PyQt6.QtGui import QIcon
+from PyQt6.QtWidgets import QDialog, QWidget, QPushButton, QToolButton, QLineEdit, QComboBox, QTableView, QMessageBox
 
 from config import ICON_REC
 from core.asr.asr_data_builder import AsrDataBuilder
@@ -17,22 +17,27 @@ from ui.driver.gui_tool import GuiTool
 from ui.driver.subtitle_embed_thread import SubtitleEmbedThread
 from ui.gui.subtitle_embed_dlg import Ui_dlgSubtitleEmbed
 from utils.file_utils import FileUtils
+from utils.path_utils import PathUtils
 
 
 class SubtitleEmbedFacade(BaseObject):
     """字幕嵌入器外观类，用于编辑字幕并执行把字幕嵌入到视频的处理。"""
 
-    def __init__(self, func_write_log, config: dict):
-        """初始化应用程序实例。"""
+    def __init__(self, func_write_log, config: dict, use_cuda: bool, icon: QIcon = None):
+        """初始化实例。"""
         super().__init__(log_to_ui_func=func_write_log)
 
         # 系统配置信息
         self.config_args = copy.deepcopy(config)
+        self.use_cuda = use_cuda
 
         # 初始化主窗口
         self.dialog = QDialog()
         self.ui = Ui_dlgSubtitleEmbed()
         self.ui.setupUi(self.dialog)
+
+        if icon:
+            self.dialog.setWindowIcon(icon)
 
         # 初始化组件映射和界面
         self._init_form_()
@@ -53,11 +58,11 @@ class SubtitleEmbedFacade(BaseObject):
         self.ui.btnVideoFile.clicked.connect(self._on_open_video_file_)
         self.ui.btnSubtitleFile.clicked.connect(self._on_open_subtitle_file_)
 
-        self._setup_double_click_handler_(self.ui.edtVideoFile, self._on_open_video_file_)
-        self._setup_double_click_handler_(self.ui.lblVideoFile, self._on_open_video_file_)
+        GuiTool.setup_double_click_handler(self.ui.edtVideoFile, self._on_open_video_file_)
+        GuiTool.setup_double_click_handler(self.ui.lblVideoFile, self._on_open_video_file_)
 
-        self._setup_double_click_handler_(self.ui.edtSubtitleFile, self._on_open_subtitle_file_)
-        self._setup_double_click_handler_(self.ui.lblSubtitleFile, self._on_open_subtitle_file_)
+        GuiTool.setup_double_click_handler(self.ui.edtSubtitleFile, self._on_open_subtitle_file_)
+        GuiTool.setup_double_click_handler(self.ui.lblSubtitleFile, self._on_open_subtitle_file_)
 
         self.ui.btnRun.setIcon(GuiTool.build_icon(ICON_REC.get('run')))
         self.ui.btnRun.clicked.connect(self._on_run_embed_)
@@ -76,18 +81,6 @@ class SubtitleEmbedFacade(BaseObject):
         for member in SubtitleLayoutEnum:
             self.ui.cbbSubtitleLayout.addItem(member.value, member)
             self.ui.cbbSubtitleLayout.setCurrentText(self.config_args['subtitle_args']['subtitle_layout'])
-
-    @staticmethod
-    def _setup_double_click_handler_(line_widget: QWidget, on_call):
-
-        def event_filter(obj, event):
-            if event.type() == QEvent.Type.MouseButtonDblClick:
-                on_call()
-                return True  # 表示事件已处理
-            return False
-
-        line_widget.installEventFilter(line_widget)
-        line_widget.eventFilter = event_filter
 
     def _on_export_to_(self):
         if self.asr_data:
@@ -189,11 +182,20 @@ class SubtitleEmbedFacade(BaseObject):
             self._ui_obj_enabled(False)
             self.config_args['subtitle_args']['subtitle_layout'] = self.ui.cbbSubtitleLayout.currentText()
             self._tableview_to_asrdata_(self.config_args['subtitle_args']['subtitle_layout'])
+
             video_file = self.ui.edtVideoFile.text()
+            if not video_file:
+                QMessageBox.warning(self.dialog, "异常", "必须选择“视频文件”！")
+                return
+            if PathUtils.have_space(video_file):
+                QMessageBox.warning(self.dialog, "异常", "视频文件路径中不能有空格！")
+                return
+
             thread = SubtitleEmbedThread(service=self.video_service,
                                          asr_data=copy.deepcopy(self.asr_data),
                                          config=self.config_args['subtitle_args'],
-                                         video_file=video_file)
+                                         video_file=video_file,
+                                         use_cuda=self.use_cuda)
             thread.message_signal.connect(lambda msg: self.log_info(msg))
             thread.end_signal.connect(self._when_end_embed_)
             thread.start()
@@ -209,15 +211,9 @@ class SubtitleEmbedFacade(BaseObject):
         Args:
             enabled (bool): 是否启用控件。
         """
-        def set_ui_enabled(widgets):
-            # 遍历所有子控件并设置启用状态
-            for widget in widgets:
-                if isinstance(widget,
-                              (QPushButton, QToolButton, QLineEdit, QComboBox, QTableView)):
-                    widget.setEnabled(enabled)
-        set_ui_enabled(self.ui.freTools.findChildren(QWidget))
-        set_ui_enabled(self.ui.freSubtitle.findChildren(QWidget))
-        set_ui_enabled(self.ui.freVideo.findChildren(QWidget))
+        GuiTool.set_ui_enabled(self.ui.freTools.findChildren(QWidget), enabled)
+        GuiTool.set_ui_enabled(self.ui.freSubtitle.findChildren(QWidget), enabled)
+        GuiTool.set_ui_enabled(self.ui.freVideo.findChildren(QWidget), enabled)
         self.ui.tbvSubtitle.setEnabled(enabled)
 
     def _tableview_to_asrdata_(self, layout: str):

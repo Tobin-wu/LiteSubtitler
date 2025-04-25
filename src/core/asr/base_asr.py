@@ -1,14 +1,14 @@
 # coding: utf8
 import json
 import os
-import zlib
 import threading
+import zlib
 from typing import Optional, Union
 
-from .asr_data import ASRData
-from .asr_data_seg import ASRDataSeg
 from config import CACHE_PATH
 from core.base_object import BaseObject
+from .asr_data import ASRData
+from .asr_data_seg import ASRDataSeg
 
 
 class BaseASR(BaseObject):
@@ -28,7 +28,7 @@ class BaseASR(BaseObject):
                  use_cache: bool = False,
                  # need_word_time_stamp: bool = False,
                  log_to_ui_func=None):
-        """初始化 BaseASR 实例。
+        """初始化实例。
 
         Args:
             audio_path (Optional[Union[str, bytes]]): 音频文件路径或字节流。

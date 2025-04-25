@@ -6,6 +6,20 @@ class CommonUtils:
     """通用工具类，提供一些常用的工具方法。"""
 
     @staticmethod
+    def hex_to_int(hex_color):
+        # 去掉颜色值前面的 '#' 符号
+        hex_color = hex_color.lstrip('#')
+        # 将十六进制字符串转换为整数
+        color_int = int(hex_color, 16)
+        return color_int
+
+    @staticmethod
+    def rgb_to_int(r, g, b):
+        # 使用位操作将 RGB 组合成一个整数
+        color_int = (r << 16) | (g << 8) | b
+        return color_int
+
+    @staticmethod
     def print_progress_bar(iteration: int, total: int, prefix: str = '', suffix: str = '',
                            decimals: int = 1, length: int = 50, fill: str = '█', print_end: str = ""):
         """在终端中打印进度条。

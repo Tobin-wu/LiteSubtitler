@@ -21,7 +21,7 @@ class SrtAligner:
     """
 
     def __init__(self):
-        """初始化对齐器，设置行号计数器。"""
+        """初始化实例。"""
         self.line_numbers = [0, 0]
 
     def align_texts(self, source_text, target_text):

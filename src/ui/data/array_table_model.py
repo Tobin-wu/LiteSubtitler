@@ -13,7 +13,7 @@ class ArrayTableModel(QAbstractTableModel):
     """
 
     def __init__(self, data: list, headers: list, parent=None):
-        """初始化表格模型。
+        """初始化实例。
 
         Args:
             data (list): 二维列表，表示表格数据。

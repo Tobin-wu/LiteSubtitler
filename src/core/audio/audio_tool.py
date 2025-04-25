@@ -2,8 +2,9 @@
 import os
 import re
 import subprocess
-from pydub import AudioSegment
 import wave
+
+from pydub import AudioSegment
 
 
 class AudioTool:

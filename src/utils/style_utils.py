@@ -1,5 +1,6 @@
 # coding: utf8
 import re
+
 from PyQt6.QtGui import QColor
 
 

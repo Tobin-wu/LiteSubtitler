@@ -6,10 +6,10 @@ from datetime import datetime
 from typing import Optional, Callable, Dict
 
 import requests
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QColor, QTextCursor, QIcon, QPixmap, QImage
 from PyQt6.QtWidgets import QWidget, QFileDialog, QFrame, QColorDialog, QMessageBox, QLineEdit, QCheckBox, QSpinBox, \
-    QDoubleSpinBox, QFontComboBox, QComboBox, QTextEdit, QTableView, QHeaderView
+    QDoubleSpinBox, QFontComboBox, QComboBox, QTextEdit, QTableView, QHeaderView, QPushButton, QToolButton, QRadioButton
 
 from config import ConfigTool, SILICON_API_KEY, SILICON_MODELS, SILICON_API_URL
 from core.llm.opanai_checker import OpenAiChecker
@@ -25,7 +25,28 @@ class GuiTool:
     """界面处理工具，用于生成各种通用对话框，通用操作等。"""
 
     @staticmethod
-    def open_and_select_file(parent: QWidget, caption: str, filter_str: str, file_edit: QLineEdit) -> str:
+    def set_ui_enabled(widgets, enabled):
+        # 遍历所有子控件并设置启用状态
+        for widget in widgets:
+            if isinstance(widget,
+                          (QPushButton, QToolButton, QLineEdit, QTextEdit, QComboBox, QTableView, QFontComboBox,
+                           QSpinBox, QDoubleSpinBox, QCheckBox, QRadioButton)):
+                widget.setEnabled(enabled)
+
+    @staticmethod
+    def setup_double_click_handler(line_widget: QWidget, on_call):
+
+        def event_filter(obj, event):
+            if event.type() == QEvent.Type.MouseButtonDblClick:
+                on_call()
+                return True  # 表示事件已处理
+            return False
+
+        line_widget.installEventFilter(line_widget)
+        line_widget.eventFilter = event_filter
+
+    @staticmethod
+    def open_and_select_file(parent: QWidget, caption: str, filter_str: str, file_edit: QLineEdit | QTextEdit) -> str:
         file, _ = QFileDialog.getOpenFileName(
             parent=parent,
             caption=caption,

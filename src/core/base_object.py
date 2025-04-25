@@ -1,7 +1,9 @@
 # coding: utf8
 import logging
 from typing import Optional, Callable
+
 from PyQt6.QtCore import QObject, pyqtSignal
+
 from settings.logger import setup_logger
 
 

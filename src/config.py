@@ -1,12 +1,12 @@
 # coding: utf8
 import copy
+import json
+import logging
 import os
 import sys
-import logging
-import json
 from typing import Dict, Any, List, Optional
 
-VERSION = "v0.0.3"
+VERSION = "v0.0.4"
 APP_TITLE = '千言字幕助手'
 APP_NAME = "LiteSubtitler"
 APP_LICENSE = "GNU General Public License version 3 (GPLv3)"
@@ -79,6 +79,8 @@ ICON_REC = {
     "ok": os.path.join(RESOURCE_PATH, "images", "icons", "确定.png"),
     "export": os.path.join(RESOURCE_PATH, "images", "icons", "导出.png"),
     "feishu": os.path.join(RESOURCE_PATH, "images", "icons", "飞书.png"),
+    "png": os.path.join(RESOURCE_PATH, "images", "icons", "png.png"),
+    "srt": os.path.join(RESOURCE_PATH, "images", "icons", "srt.png"),
 }
 
 DEFAULT_ARGS = {

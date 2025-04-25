@@ -1,18 +1,18 @@
 # coding: utf8
 import openai
 from PyQt6.QtCore import pyqtSlot, QTime, QEventLoop
-from PyQt6.QtGui import QColor, QTextCharFormat, QTextCursor, QFont
+from PyQt6.QtGui import QColor, QTextCharFormat, QTextCursor, QFont, QIcon
 from PyQt6.QtWidgets import QDialog, QApplication
 
 from config import ICON_REC
 from core.asr.asr_data import ASRData
 from core.asr.asr_data_builder import AsrDataBuilder
 from core.base_object import BaseObject
-from ui.driver.ai_chat_thread import AIChatThread
 from enums.language_enums import SubtitleLanguageEnum
 from enums.supported_subtitle_enum import SupportedSubtitleEnum
 from enums.translate_mode_enum import TranslateModeEnum
 from service.translate_service import TranslateService
+from ui.driver.ai_chat_thread import AIChatThread
 from ui.driver.ai_translate_thread import AiTranslateThread
 from ui.driver.gui_tool import GuiTool
 from ui.gui.llm_prompter_dlg import Ui_dlgLlmPrompter
@@ -22,8 +22,8 @@ from utils.file_utils import FileUtils
 class LlmPrompterFacade(BaseObject):
     """LLM提示语工具的外观类。"""
 
-    def __init__(self, func_write_log, config):
-        """初始化LLM提示语工具实例。"""
+    def __init__(self, func_write_log, config, icon: QIcon = None):
+        """初始化实例。"""
         super().__init__(log_to_ui_func=func_write_log)
 
         self.translate_service = TranslateService(log_to_ui_func=func_write_log,
@@ -32,6 +32,9 @@ class LlmPrompterFacade(BaseObject):
         self.dialog = QDialog()
         self.ui = Ui_dlgLlmPrompter()
         self.ui.setupUi(self.dialog)
+
+        if icon:
+            self.dialog.setWindowIcon(icon)
 
         self.ui.btnRun.setIcon(GuiTool.build_icon(ICON_REC.get('run')))
         self.ui.btnSavePrompt.setIcon(GuiTool.build_icon(ICON_REC.get('save')))

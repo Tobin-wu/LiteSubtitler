@@ -11,8 +11,8 @@ from PyQt6.QtWidgets import (
 )
 
 from config import ConfigTool, GITEE_REPO_URL, GITHUB_REPO_URL, FEISHU_DOWNLOAD_URL
-from core.llm.opanai_checker import OpenAiChecker
 from controller.subtitles_controller import MainController
+from core.llm.opanai_checker import OpenAiChecker
 from enums.language_enums import AudioLanguageEnum, SubtitleLanguageEnum
 from enums.supported_subtitle_enum import SubtitleLayoutEnum
 from enums.translate_mode_enum import TranslateModeEnum
@@ -20,11 +20,12 @@ from ui.base_config_facade import BaseConfigFacade
 from ui.data.array_table_model import ArrayTableModel
 from ui.driver.gui_tool import GuiTool
 from ui.facade.about_fcd import AboutFacade
+from ui.facade.image_embed_fcd import ImageEmbedFacade
 from ui.facade.llm_prompter_fcd import LlmPrompterFacade
+from ui.facade.main_frm_helper import MainFrmHelper
 from ui.facade.setting_fcd import SettingFacade
 from ui.facade.subtitle_embed_fcd import SubtitleEmbedFacade
 from ui.gui.main_frm import Ui_frmMain
-from ui.facade.main_frm_helper import MainFrmHelper
 from utils.path_utils import PathUtils
 from utils.uuid_utils import UuidUtils
 
@@ -38,7 +39,7 @@ class MainFacade(BaseConfigFacade):
     """主应用程序外观类，负责初始化界面、处理用户交互和任务调度。"""
 
     def __init__(self):
-        """初始化应用程序实例。"""
+        """初始化实例。"""
         super().__init__(log_to_ui_func=self.write_log, config=ConfigTool.read_config_setting())
 
         self.llm_ok = False  # LLM连接状态
@@ -96,7 +97,7 @@ class MainFacade(BaseConfigFacade):
             )
 
     def _init_form_(self) -> None:
-        """初始化主窗口界面组件。"""
+        """初始化窗口。"""
         # 日志框样式设置
         self.ui.txtLog.setStyleSheet("QTextEdit { background-color: #2B2B2B; color: #A9B7C6; border: 1px solid gray; }")
 
@@ -113,7 +114,7 @@ class MainFacade(BaseConfigFacade):
         )
 
     def _init_form_comp_(self) -> None:
-        """初始化界面组件和事件绑定。"""
+        """初始化窗口上的组件。"""
         MainFrmHelper.fill_icon(self.ui)
 
         # 按钮事件绑定
@@ -132,7 +133,8 @@ class MainFacade(BaseConfigFacade):
         self.ui.actExit.triggered.connect(self.mainWindow.close)
 
         self.ui.actLlmChecker.triggered.connect(self._on_open_prompt_dlg_)
-        self.ui.actSubtitleEmbed.triggered.connect(self._on_open_embed_dlg_)
+        self.ui.actSubtitleEmbed.triggered.connect(self._on_open_srt_embed_dlg_)
+        self.ui.actImageEmbed.triggered.connect(self._on_open_image_embed_dlg_)
 
         self.ui.actGitee.triggered.connect(lambda: self._on_open_url_(GITEE_REPO_URL))
         self.ui.actGithub.triggered.connect(lambda: self._on_open_url_(GITHUB_REPO_URL))
@@ -157,6 +159,7 @@ class MainFacade(BaseConfigFacade):
             self._init_combobox_(*config)
 
     def _on_open_setting_dlg_(self):
+        """配置"""
         try:
             fcd_setting = SettingFacade(func_write_log=self.write_log,
                                         config=self.config_args)
@@ -164,16 +167,29 @@ class MainFacade(BaseConfigFacade):
         finally:
             self._fill_args_to_ui()
 
-    def _on_open_embed_dlg_(self):
-        fcd_embed = SubtitleEmbedFacade(func_write_log=self.write_log,
-                                        config=self.config_args)
-        fcd_embed.show()
+    def _on_open_srt_embed_dlg_(self):
+        """字幕合成工具"""
+        fcd_srt_embed = SubtitleEmbedFacade(func_write_log=self.write_log,
+                                            config=self.config_args,
+                                            use_cuda=self.controller.use_cuda,
+                                            icon=self.ui.actSubtitleEmbed.icon())
+        fcd_srt_embed.show()
+
+    def _on_open_image_embed_dlg_(self):
+        """图片嵌入工具"""
+        fcd_image_embed = ImageEmbedFacade(func_write_log=self.write_log,
+                                           config=self.config_args,
+                                           use_cuda=self.controller.use_cuda,
+                                           icon=self.ui.actImageEmbed.icon())
+        fcd_image_embed.show()
 
     def _on_open_about_dlg_(self):
+        """关于"""
         fcd_about = AboutFacade(func_write_log=self.write_log)
         fcd_about.show()
 
     def _on_open_prompt_dlg_(self):
+        """提示语调整工具"""
         fcd_llm_tool = LlmPrompterFacade(
             func_write_log=self.write_log,
             config={
@@ -181,7 +197,8 @@ class MainFacade(BaseConfigFacade):
                 "api_key": self.config_args['translate_args']['llm_api_key'],
                 "models": [],
                 "PROMPT_FILES": self.config_args["PROMPT_FILES"]
-            }
+            },
+            icon=self.ui.actLlmChecker.icon()
         )
         fcd_llm_tool.show()
 
@@ -234,11 +251,7 @@ class MainFacade(BaseConfigFacade):
         self.ui.btnClearFile.setEnabled(enabled)
 
         # 遍历所有子控件并设置启用状态
-        widgets = self.ui.freSetting.findChildren(QWidget)
-        for widget in widgets:
-            if isinstance(widget,
-                          (QPushButton, QLineEdit, QComboBox, QFontComboBox, QSpinBox, QDoubleSpinBox, QCheckBox)):
-                widget.setEnabled(enabled)
+        GuiTool.set_ui_enabled(self.ui.freSetting.findChildren(QWidget), enabled)
 
     def _on_start_run(self) -> None:
         """开始运行任务前的准备工作。"""
