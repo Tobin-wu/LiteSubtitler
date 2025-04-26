@@ -50,6 +50,8 @@ class ImageEmbedFacade(BaseObject):
 
         self.video_info = None
 
+        self.thread = None
+
     def show(self) -> None:
         """显示。"""
         self.dialog.exec()
@@ -194,13 +196,13 @@ class ImageEmbedFacade(BaseObject):
         if self._check_and_refresh_():
             self._ui_obj_enabled(False)
 
-            thread = ImageEmbedThread(service=self.video_service,
-                                      config=self.config_args,
-                                      video_info=self.video_info,
-                                      use_cuda=self.use_cuda)
-            thread.message_signal.connect(lambda msg: self.log_info(msg))
-            thread.end_signal.connect(self._when_end_embed_)
-            thread.start()
+        self.thread = ImageEmbedThread(service=self.video_service,
+                                       config=self.config_args,
+                                       video_info=self.video_info,
+                                       use_cuda=self.use_cuda)
+        self.thread.message_signal.connect(lambda msg: self.log_info(msg))
+        self.thread.end_signal.connect(self._when_end_embed_)
+        self.thread.start()
 
     def _check_path_space_(self, file_path: str, title: str):
         if file_path:
@@ -279,9 +281,9 @@ class ImageEmbedFacade(BaseObject):
         self.config_args["delete_temp"] = self.ui.chbDeleteTemp.isChecked()
 
         path = self.config_args["head_image"]["file_path"] or \
-            self.config_args["embed1_arg"].file_path or \
-            self.config_args["embed2_arg"].file_path or \
-            self.config_args["end_image"]["file_path"]
+               self.config_args["embed1_arg"].file_path or \
+               self.config_args["embed2_arg"].file_path or \
+               self.config_args["end_image"]["file_path"]
 
         if not path:
             QMessageBox.warning(self.dialog, "异常", "必须选择某个图片来进行处理！")

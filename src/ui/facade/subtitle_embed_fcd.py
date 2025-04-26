@@ -29,6 +29,11 @@ class SubtitleEmbedFacade(BaseObject):
 
         # 系统配置信息
         self.config_args = copy.deepcopy(config)
+
+        self.config_args['subtitle_args']['is_embed_subtitle'] = True
+        self.config_args['subtitle_args']['is_soft_subtitle'] = False
+        self.config_args['subtitle_args']['need_remove_temp_file'] = True
+
         self.use_cuda = use_cuda
 
         # 初始化主窗口
@@ -48,6 +53,8 @@ class SubtitleEmbedFacade(BaseObject):
         self.asr_data = None
         self.model = self._build_tableview_model_()
         self.subtitle_file_vo = None
+
+        self.thread = None
 
     def show(self) -> None:
         """显示。"""
@@ -191,14 +198,14 @@ class SubtitleEmbedFacade(BaseObject):
                 QMessageBox.warning(self.dialog, "异常", "视频文件路径中不能有空格！")
                 return
 
-            thread = SubtitleEmbedThread(service=self.video_service,
+            self.thread = SubtitleEmbedThread(service=self.video_service,
                                          asr_data=copy.deepcopy(self.asr_data),
                                          config=self.config_args['subtitle_args'],
                                          video_file=video_file,
                                          use_cuda=self.use_cuda)
-            thread.message_signal.connect(lambda msg: self.log_info(msg))
-            thread.end_signal.connect(self._when_end_embed_)
-            thread.start()
+            self.thread.message_signal.connect(lambda msg: self.log_info(msg))
+            self.thread.end_signal.connect(self._when_end_embed_)
+            self.thread.start()
 
     def _when_end_embed_(self, msg: str):
         self._ui_obj_enabled(True)
