@@ -31,7 +31,8 @@ class MainController(BaseObject):
                  model: ArrayTableModel,
                  config_args,
                  finished_all_callback=None,
-                 log_to_ui_func=None):
+                 log_to_ui_func=None,
+                 tools_already=False):
         """
         创建函数
 
@@ -57,9 +58,10 @@ class MainController(BaseObject):
         self.task_count = 0  # 未处理的任务数
         self.finished_all_callback = finished_all_callback
 
-        self.use_cuda = self.video_service.check_cuda_available()
-        if self.use_cuda:
-            self.log_info("FFmpeg 可以使用 CUDA 加速。")
+        if tools_already:
+            self.use_cuda = self.video_service.check_cuda_available()
+            if self.use_cuda:
+                self.log_info("FFmpeg 可以使用 CUDA 加速。")
 
     def stop(self):
         """

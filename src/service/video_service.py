@@ -96,7 +96,8 @@ class VideoService(BaseObject):
                          end_image_file: str = None,
                          start_seconds: int = 2,
                          end_seconds: int = 2,
-                         scale: str = '1280:720',
+                         video_width:int = 1280,
+                         video_height: int = 720,
                          frame_rate: int = 30,
                          bit_rate: str = '1M',
                          audio_sampling_rate: int = 44100,
@@ -113,7 +114,8 @@ class VideoService(BaseObject):
             end_image_file(str): 加到视频尾的图片文件。
             start_seconds(int): 开始图片的视频时长。
             end_seconds(int): 结束图片的视频时长。
-            scale(str): 分辨率。
+            video_width(int): 视频宽。
+            video_height(int): 视频高。
             frame_rate(int): 帧率。
             bit_rate(str): 比特率。
             audio_sampling_rate(int): 音频采样率。
@@ -134,14 +136,16 @@ class VideoService(BaseObject):
             if start_image_file:
                 start_image_mp4 = ffmpeg_handler.image_to_mp4(image_file_path=start_image_file,
                                                               seconds=start_seconds,
-                                                              scale=scale,
+                                                              width=video_width,
+                                                              height=video_height,
                                                               frame_rate=frame_rate,
                                                               audio_sampling_rate=audio_sampling_rate)
             end_image_mp4 = None
             if end_image_file:
                 end_image_mp4 = ffmpeg_handler.image_to_mp4(image_file_path=end_image_file,
                                                             seconds=end_seconds,
-                                                            scale=scale,
+                                                            width=video_width,
+                                                            height=video_height,
                                                             frame_rate=frame_rate,
                                                             audio_sampling_rate=audio_sampling_rate)
             tmp_file_path = None
@@ -149,7 +153,7 @@ class VideoService(BaseObject):
                 tmp_file_path = os.path.join(video_file_vo.file_dir, video_file_vo.file_only_name + '_tmp.mp4')
                 ffmpeg_handler.to_mp4(video_file_path=video_file,
                                       out_file_path=tmp_file_path,
-                                      scale=scale,
+                                      scale=f'{video_width}:{video_height}',
                                       frame_rate=frame_rate,
                                       bit_rate=bit_rate,
                                       use_cuda=self._args['use_cuda'])
@@ -171,7 +175,7 @@ class VideoService(BaseObject):
                     #                        video_file_vo.file_only_name + '_' + UuidUtils.generate_time_id() + '.mp4')
                     ffmpeg_handler.concat_mp4(out_file_path=out_video_file,
                                               concat_files=concat_files,
-                                              scale=scale,
+                                              scale=f"{video_width}:{video_height}",
                                               frame_rate=frame_rate,
                                               bit_rate=bit_rate,
                                               use_cuda=self._args['use_cuda'])

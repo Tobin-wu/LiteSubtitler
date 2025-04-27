@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Optional, Callable, Literal, Dict, Any
 
 from core.base_object import BaseObject
+from core.image.image_tool import ImageTool
 from core.video.image_embed_arg import ImageEmbedArg
 from model.file_vo import FileVO
 from utils.uuid_utils import UuidUtils
@@ -178,7 +179,8 @@ class FfmpegHandler(BaseObject):
 
     def image_to_mp4(self, image_file_path: str,
                      seconds: int = 2,
-                     scale: str = '1280:720',
+                     width: int = 1280,
+                     height: int = 720,
                      frame_rate: int = 30,
                      use_cuda: bool = False,
                      audio_sampling_rate: int = 44100,
@@ -190,13 +192,15 @@ class FfmpegHandler(BaseObject):
         Args:
             image_file_path: 图片文件。
             seconds: 视频时长。
-            scale: 分辨率。
+            width(int): 宽。
+            height(int): 宽。
             frame_rate: 帧率。
             use_cuda: 是否使用CUDA。
             audio_sampling_rate(int): 音频采样率。
             audio_channel_layout(str): 音频声道。
             title: 这个功能的标题。
         """
+        scale: str = f"{width}:{height}"
         image_file_vo = FileVO(image_file_path)
         if not image_file_vo.is_file:
             raise FileNotFoundError(f"图片文件 {image_file_path} 不存在")
@@ -205,29 +209,40 @@ class FfmpegHandler(BaseObject):
             audio_sampling_rate = 44100
 
         output_dir = image_file_vo.file_dir
-        out_file_path = os.path.join(output_dir, image_file_vo.file_only_name + '.mp4')
+        out_img_file = os.path.join(output_dir, image_file_vo.file_only_name + '_tmp.' + image_file_vo.file_extension)
+        try:
+            ImageTool.resize_image(
+                input_image_path=image_file_path,
+                output_image_path=out_img_file,
+                size=(width, height)
+            )
 
-        cmd = ['ffmpeg']
-        if use_cuda:
-            cmd.extend(['-hwaccel', 'cuda'])
-        cmd.extend([
-            '-loop', '1',
-            '-i', image_file_path,
-            '-f', 'lavfi',
-            '-i', f'anullsrc=channel_layout={audio_channel_layout}:sample_rate={audio_sampling_rate}',
-            '-c:v', 'libx264',
-            '-t', f'{seconds}',
-            '-pix_fmt', 'yuv420p',
-            '-r', f'{frame_rate}',
-            '-vf', f' scale={scale} ',  # 这里必须加前后空格
-            '-shortest',
-            '-c:a', 'aac',
-            '-y', out_file_path])
+            out_file_path = os.path.join(output_dir, image_file_vo.file_only_name + '.mp4')
 
-        if self._run_(cmd, title) == 0:
-            return out_file_path
-        else:
-            return None
+            cmd = ['ffmpeg']
+            if use_cuda:
+                cmd.extend(['-hwaccel', 'cuda'])
+            cmd.extend([
+                '-loop', '1',
+                '-i', out_img_file,
+                '-f', 'lavfi',
+                '-i', f'anullsrc=channel_layout={audio_channel_layout}:sample_rate={audio_sampling_rate}',
+                '-c:v', 'libx264',
+                '-t', f'{seconds}',
+                '-pix_fmt', 'yuv420p',
+                '-r', f'{frame_rate}',
+                '-vf', f' scale={scale} ',  # 这里必须加前后空格
+                '-shortest',
+                '-c:a', 'aac',
+                '-y', out_file_path])
+
+            if self._run_(cmd, title) == 0:
+                return out_file_path
+            else:
+                return None
+        finally:
+            if os.path.exists(out_img_file):
+                os.remove(out_img_file)
 
     def concat_mp4(self, out_file_path: str,
                    concat_files: list[str],

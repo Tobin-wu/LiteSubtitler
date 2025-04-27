@@ -444,7 +444,7 @@
          <item>
           <widget class="QCheckBox" name="ckbRemoveTempFile">
            <property name="text">
-            <string>是否删除处理中产生的文件</string>
+            <string>删除处理中产生的文件</string>
            </property>
           </widget>
          </item>

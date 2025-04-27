@@ -58,17 +58,30 @@ class MainFacade(BaseConfigFacade):
         self.run_status = RUN_STATUS_INIT
         self.model = self._build_table_view_model()
 
+        """开始运行的准备工作。"""
+        self.append_tool_path_to_env()
+
+        tools_already = self._check_tool()
+        if not tools_already:
+            # self._ui_obj_enabled(False)
+            self.log_warning(f'请从飞书下载 -full.7z 或者 -full-large-v2.7z 版：{FEISHU_DOWNLOAD_URL}')
+
         # 初始化任务控制器
         self.controller = MainController(
             model=self.model,
             finished_all_callback=self._on_all_task_finished,
             config_args=self.config_args,
-            log_to_ui_func=self.write_log
+            log_to_ui_func=self.write_log,
+            tools_already=tools_already
         )
 
     def show_main_form(self) -> None:
         """显示主窗口。"""
         self.mainWindow.show()
+
+    def append_tool_path_to_env(self):
+        faster_whisper_dir = os.path.dirname(self.config_args['asr_args']['faster_whisper_path'])
+        PathUtils.append_to_env_path(faster_whisper_dir)
 
     def set_app_icon(self, app_icon: QIcon) -> None:
         """设置应用的图标。
@@ -255,8 +268,7 @@ class MainFacade(BaseConfigFacade):
 
     def _on_start_run(self) -> None:
         """开始运行任务前的准备工作。"""
-        faster_whisper_dir = os.path.dirname(self.config_args['asr_args']['faster_whisper_path'])
-        PathUtils.append_to_env_path(faster_whisper_dir)
+        self.append_tool_path_to_env()
 
         # 检查工具和模型是否准备就绪
         if self._check_tool():

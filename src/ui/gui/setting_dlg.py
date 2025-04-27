@@ -489,7 +489,7 @@ class Ui_dlgSetting(object):
         self.cbbLlmModel.setItemText(0, _translate("dlgSetting", "gemma2:latest"))
         self.ckbEmbedSubtitle.setText(_translate("dlgSetting", "把字幕合成到视频中"))
         self.ckbSoftSubtitle.setText(_translate("dlgSetting", "使用软字幕"))
-        self.ckbRemoveTempFile.setText(_translate("dlgSetting", "是否删除处理中产生的文件"))
+        self.ckbRemoveTempFile.setText(_translate("dlgSetting", "删除处理中产生的文件"))
         self.lblSubtitleLayout.setText(_translate("dlgSetting", "字幕排布（原文和译文的布局）"))
         self.lblSubtitleVH.setText(_translate("dlgSetting", "字幕与视频底部间隔"))
         self.lblSubtitleMain.setText(_translate("dlgSetting", "主字幕（上面的字幕）样式："))

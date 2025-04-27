@@ -183,7 +183,7 @@ class ImageEmbedFacade(BaseObject):
             self.log_info(f"视频信息：{video_info}")
             if video_info['duration_seconds'] > 0:
                 self.video_info = video_info
-                str_info = (f'分辨率：{video_info["width"]} * {video_info["height"]})，'
+                str_info = (f'分辨率：{video_info["width"]} * {video_info["height"]}，'
                             f'时长：{video_info["duration_seconds"]} 秒')
                 self.ui.lblVideoInfo.setText(str_info)
                 info = FileVO(new_video)

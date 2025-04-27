@@ -17,15 +17,11 @@ class ImageTool:
         :param output_image_path: 输出图像文件的路径
         :param size: 输出尺寸，格式为(length, width)
         """
-        try:
-            # 打开图像文件
-            with Image.open(input_image_path) as img:
-                # 保存截取后的图像
-                resized_img = img.resize(size)
-                resized_img.save(output_image_path)
-                print(f"图像已成功重置尺寸并保存到 {output_image_path}")
-        except Exception as e:
-            print(f"处理图像时发生错误: {e}")
+        # 打开图像文件
+        with Image.open(input_image_path) as img:
+            # 保存截取后的图像
+            resized_img = img.resize(size)
+            resized_img.save(output_image_path)
 
     @staticmethod
     def crop_resize_image(input_image_path, output_image_path, crop_box, size):
