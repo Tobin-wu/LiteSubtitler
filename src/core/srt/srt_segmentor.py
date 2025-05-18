@@ -191,8 +191,8 @@ class SrtSegmentor(BaseObject):
         split_index = n // 2 if all_equal else self._find_split_index(segs_to_merge, n)
 
         # 递归拆分
-        first_segs = segs_to_merge[:split_index + 1]
-        second_segs = segs_to_merge[split_index + 1:]
+        first_segs = segs_to_merge[:split_index]
+        second_segs = segs_to_merge[split_index:]
         return self._split_long_segment(first_segs) + self._split_long_segment(second_segs)
 
     @staticmethod
